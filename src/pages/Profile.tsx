@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import FollowersModal from '@/components/profile/FollowersModal';
+import { toast } from '@/hooks/use-toast';
 
 interface Profile {
   id: string;
@@ -167,6 +168,20 @@ const Profile = () => {
   const handleMessage = async () => {
     if (!user || !profile) return;
     navigate(`/messages/new?to=${profile.user_id}`);
+  };
+
+  const handleShareProfile = () => {
+    if (profile) {
+      const profileUrl = `${window.location.origin}/profile/${profile.username}`;
+      navigator.clipboard.writeText(profileUrl)
+        .then(() => {
+          toast({ title: 'Profile link copied to clipboard!' });
+        })
+        .catch((err) => {
+          console.error('Failed to copy profile link:', err);
+          toast({ title: 'Failed to copy profile link.', variant: 'destructive' });
+        });
+    }
   };
 
   const getAccountLabel = () => {
@@ -357,7 +372,7 @@ const Profile = () => {
               <Button className="flex-1" variant="secondary" asChild>
                 <Link to="/settings">Edit Profile</Link>
               </Button>
-              <Button className="flex-1" variant="secondary">
+              <Button className="flex-1" variant="secondary" onClick={handleShareProfile}>
                 Share Profile
               </Button>
             </div>
