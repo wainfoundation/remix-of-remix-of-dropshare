@@ -91,9 +91,10 @@ class PushNotificationService {
         applicationServerKey,
       });
 
-      // Store subscription locally for now
-      // TODO: Implement proper subscription storage when database types are updated
-      console.log('Push subscription successful - stored locally');
+      // Save subscription to database
+      await this.saveSubscriptionToDatabase(this.subscription);
+      
+      console.log('Push subscription successful - saved to database');
       return true;
     } catch (error) {
       console.error('Failed to subscribe to push notifications:', error);
@@ -101,12 +102,65 @@ class PushNotificationService {
     }
   }
 
+  private async saveSubscriptionToDatabase(subscription: PushSubscription): Promise<void> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        // For Pi Network users, get the current user from profiles
+        const userId = localStorage.getItem('pi_user_id');
+        if (!userId) {
+          console.warn('No user ID found for subscription');
+          return;
+        }
+
+        const subscriptionData = subscription.toJSON();
+        const { error } = await supabase
+          .from('push_subscriptions')
+          .upsert({
+            user_id: userId,
+            endpoint: subscriptionData.endpoint || '',
+            p256dh: subscriptionData.keys?.p256dh || '',
+            auth: subscriptionData.keys?.auth || '',
+          }, {
+            onConflict: 'user_id,endpoint'
+          });
+
+        if (error) {
+          console.error('Failed to save subscription:', error);
+        }
+        return;
+      }
+
+      const subscriptionData = subscription.toJSON();
+      const { error } = await supabase
+        .from('push_subscriptions')
+        .upsert({
+          user_id: user.id,
+          endpoint: subscriptionData.endpoint || '',
+          p256dh: subscriptionData.keys?.p256dh || '',
+          auth: subscriptionData.keys?.auth || '',
+        }, {
+          onConflict: 'user_id,endpoint'
+        });
+
+      if (error) {
+        console.error('Failed to save subscription:', error);
+      }
+    } catch (error) {
+      console.error('Error saving subscription to database:', error);
+    }
+  }
+
   async unsubscribe(): Promise<boolean> {
     try {
       if (this.subscription) {
+        const endpoint = this.subscription.endpoint;
         await this.subscription.unsubscribe();
-        // TODO: Remove subscription from database when types are updated
-        console.log('Push subscription removed locally');
+        
+        // Remove subscription from database
+        await this.removeSubscriptionFromDatabase(endpoint);
+        
+        console.log('Push subscription removed');
         this.subscription = null;
         return true;
       }
@@ -114,6 +168,21 @@ class PushNotificationService {
     } catch (error) {
       console.error('Failed to unsubscribe from push notifications:', error);
       return false;
+    }
+  }
+
+  private async removeSubscriptionFromDatabase(endpoint: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('push_subscriptions')
+        .delete()
+        .eq('endpoint', endpoint);
+
+      if (error) {
+        console.error('Failed to remove subscription from database:', error);
+      }
+    } catch (error) {
+      console.error('Error removing subscription from database:', error);
     }
   }
 

@@ -36,50 +36,56 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
   console.log('[SW] Push event received');
   
-  const options = {
-    body: 'You have a new notification!',
-    icon: '/icon-192x192.png',
-    badge: '/icon-72x72.png',
-    vibrate: [200, 100, 200],
-    data: {
-      url: '/'
-    },
-    actions: [
-      {
-        action: 'open',
-        title: 'Open DropShare',
-        icon: '/icon-72x72.png'
-      },
-      {
-        action: 'close',
-        title: 'Close',
-        icon: '/close.png'
-      }
-    ]
-  };
-
   let title = 'DropShare';
   let body = 'You have a new notification!';
   let data = {};
+  let url = '/';
 
   if (event.data) {
     try {
       const pushData = event.data.json();
       title = pushData.title || title;
       body = pushData.body || body;
-      data = pushData.data || data;
-      Object.assign(options, pushData);
+      data = pushData.data || {};
+      
+      // Determine URL based on notification type
+      if (data.type === 'like' || data.type === 'comment' || data.type === 'share') {
+        url = `/post/${data.post_id}`;
+      } else if (data.type === 'follow') {
+        url = `/profile/${data.user_id}`;
+      } else if (data.type === 'message') {
+        url = `/messages/${data.conversation_id}`;
+      }
     } catch (e) {
       console.error('[SW] Error parsing push data:', e);
     }
   }
 
+  const options = {
+    body,
+    icon: '/icon-192x192.png',
+    badge: '/icon-72x72.png',
+    vibrate: [200, 100, 200, 100, 200],
+    tag: data.type || 'notification',
+    requireInteraction: data.type === 'message',
+    data: {
+      ...data,
+      url
+    },
+    actions: [
+      {
+        action: 'open',
+        title: 'View',
+      },
+      {
+        action: 'close',
+        title: 'Dismiss',
+      }
+    ]
+  };
+
   event.waitUntil(
-    self.registration.showNotification(title, {
-      ...options,
-      body,
-      data
-    })
+    self.registration.showNotification(title, options)
   );
 });
 

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import PushNotificationService from '@/lib/notifications';
 
 interface Profile {
   id: string;
@@ -122,6 +123,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Store Pi auth state
       localStorage.setItem("pi_authenticated", "true");
       
+      // Request notification permissions automatically
+      setTimeout(async () => {
+        try {
+          const notificationService = PushNotificationService.getInstance();
+          await notificationService.init();
+          const permission = await notificationService.requestPermission();
+          
+          if (permission === 'granted') {
+            await notificationService.subscribe();
+            await notificationService.setupRealtimeNotifications();
+            console.log('Notifications enabled successfully');
+          }
+        } catch (error) {
+          console.error('Failed to setup notifications:', error);
+        }
+      }, 1000);
+      
       return { error: null, isNewUser: false };
     } catch (error) {
       console.error('signInWithPi error:', error);
@@ -210,6 +228,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         created_at: profileData.created_at,
         updated_at: profileData.updated_at,
       } as User);
+
+      // Request notification permissions automatically for new users
+      setTimeout(async () => {
+        try {
+          const notificationService = PushNotificationService.getInstance();
+          await notificationService.init();
+          const permission = await notificationService.requestPermission();
+          
+          if (permission === 'granted') {
+            await notificationService.subscribe();
+            await notificationService.setupRealtimeNotifications();
+            console.log('Notifications enabled successfully');
+          }
+        } catch (error) {
+          console.error('Failed to setup notifications:', error);
+        }
+      }, 1000);
 
       return { error: null };
     } catch (error) {
