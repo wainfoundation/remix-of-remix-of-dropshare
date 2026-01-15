@@ -185,7 +185,7 @@ const RightSidebar = ({ mobile = false }: RightSidebarProps) => {
                     {profile.display_name}
                   </button>
                   <p className="text-xs text-muted-foreground truncate">
-                    @{profile.username}
+                    {profile.username}
                   </p>
                 </div>
                 <Button

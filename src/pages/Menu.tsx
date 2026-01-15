@@ -177,7 +177,7 @@ const Menu = () => {
             </div>
             <div className="flex-1">
               <h2 className="text-lg font-semibold">{profile.display_name}</h2>
-              <p className="text-sm text-muted-foreground">@{profile.username}</p>
+              <p className="text-sm text-muted-foreground">{profile.username}</p>
               <p className="text-xs text-muted-foreground capitalize mt-1">
                 {profile.account_type} Account
               </p>

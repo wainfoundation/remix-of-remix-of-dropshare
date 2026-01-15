@@ -627,7 +627,7 @@ const Analytics = () => {
                     </Avatar>
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg">{profile?.display_name}</h3>
-                      <p className="text-sm text-muted-foreground">@{profile?.username}</p>
+                      <p className="text-sm text-muted-foreground">{profile?.username}</p>
                       <Badge variant="secondary" className="mt-1">
                         {profile?.account_type === 'creator' ? 'Creator' : 'Business'}
                       </Badge>

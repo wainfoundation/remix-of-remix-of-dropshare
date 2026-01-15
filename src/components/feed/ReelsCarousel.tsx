@@ -144,7 +144,7 @@ const ReelsCarousel = () => {
                 {reel.caption || 'Watch reel'}
               </p>
               <p className="text-white/80 text-xs mt-1 drop-shadow-lg">
-                @{reel.profiles.username}
+                {reel.profiles.username}
               </p>
             </div>
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />

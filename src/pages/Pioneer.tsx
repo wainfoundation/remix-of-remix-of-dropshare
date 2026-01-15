@@ -221,7 +221,7 @@ const Pioneer = () => {
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground truncate">
-                          @{profile.username}
+                          {profile.username}
                         </p>
                         {profile.bio && (
                           <p className="text-sm text-muted-foreground line-clamp-2 mt-1">

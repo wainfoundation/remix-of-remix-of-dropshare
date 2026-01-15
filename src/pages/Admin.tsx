@@ -437,7 +437,7 @@ const Admin = () => {
                         </div>
                         <div>
                           <p className="font-medium">{user.display_name}</p>
-                          <p className="text-sm text-muted-foreground">@{user.username}</p>
+                          <p className="text-sm text-muted-foreground">{user.username}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">

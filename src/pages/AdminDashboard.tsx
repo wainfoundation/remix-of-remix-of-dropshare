@@ -356,7 +356,7 @@ const AdminDashboard = () => {
                         <div className="flex items-center gap-2 mb-2">
                           <Badge variant="outline">{report.content_type}</Badge>
                           <span className="text-sm text-muted-foreground">
-                            Reported by @{report.reporter.username}
+                            Reported by {report.reporter.username}
                           </span>
                         </div>
                         <p className="font-medium">{report.reason}</p>
@@ -405,7 +405,7 @@ const AdminDashboard = () => {
                         <div className="flex items-center gap-2 mb-2">
                           <Badge variant="outline">{ad.ad_type}</Badge>
                           <span className="text-sm text-muted-foreground">
-                            by @{ad.advertiser.username}
+                            by {ad.advertiser.username}
                           </span>
                         </div>
                         <p className="font-medium">{ad.title}</p>

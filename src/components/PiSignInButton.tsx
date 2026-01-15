@@ -108,7 +108,7 @@ export function PiSignInButton() {
               <User className="w-4 h-4 text-primary-foreground" />
             </div>
             <span className="text-sm font-medium">
-              @{user.username || `Pioneer ${user.uid.slice(0, 8)}`}
+              {user.username || `@pioneer${user.uid.slice(0, 8)}`}
             </span>
           </div>
           <Button variant="ghost" size="sm" onClick={handleLogout}>

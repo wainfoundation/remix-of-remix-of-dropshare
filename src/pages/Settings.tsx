@@ -277,7 +277,7 @@ const Settings = () => {
             </div>
             <div className="flex-1 text-left">
               <p className="font-semibold">{profile.display_name}</p>
-              <p className="text-sm text-muted-foreground">@{profile.username}</p>
+              <p className="text-sm text-muted-foreground">{profile.username}</p>
             </div>
             <ChevronRight className="h-5 w-5 text-muted-foreground" />
           </button>
