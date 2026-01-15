@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- TODO: Set the document title to the name of your application -->
+    <title>DropShare</title>
+    <meta name="description" content="Join the community of products lovers">
+    <meta name="author" content="Lovable" />
+
+    <!-- TODO: Update og:title to match your application name -->
+    
+    
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/vl5cPMeakfYKAbhFI5XpJ1vUD6a2/social-images/social-1768436786482-Untitled design (72).png">
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Lovable" />
+    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/vl5cPMeakfYKAbhFI5XpJ1vUD6a2/social-images/social-1768436786482-Untitled design (72).png">
+    
+  
+  <link rel="icon" type="image/png" href="https://storage.googleapis.com/gpt-engineer-file-uploads/vl5cPMeakfYKAbhFI5XpJ1vUD6a2/uploads/1768436670580-Untitled design (72).png">
+  
+  
+  <meta property="og:title" content="DropShare">
+  <meta name="twitter:title" content="DropShare">
+  <meta property="og:description" content="Join the community of products lovers">
+  <meta name="twitter:description" content="Join the community of products lovers">
+
+  <!-- Pi SDK - Must be included in HTML as per Pi documentation -->
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <script>
+    // Initialize Pi SDK immediately as per Pi documentation
+    if (window.Pi) {
+      // Check if we're in development (sandbox) or production
+      const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1') || window.location.hostname.includes('ngrok') || window.location.hostname.includes('localtunnel');
+      
+      window.Pi.init({ 
+        version: "2.0", 
+        sandbox: isDevelopment 
+      });
+      
+      console.log('Pi SDK initialized in', isDevelopment ? 'sandbox' : 'production', 'mode');
+    } else {
+      console.warn('Pi SDK not available - ensure you are using Pi Browser');
+    }
+  </script>
+</head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
