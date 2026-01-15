@@ -57,17 +57,18 @@ const Profile = () => {
 
   useEffect(() => {
     if (username) {
-      fetchProfile();
+      const normalizedUsername = username.startsWith('@') ? username : `@${username}`;
+      fetchProfile(normalizedUsername);
     }
   }, [username, user]);
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (normalizedUsername: string) => {
     setLoading(true);
 
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .select('*')
-      .eq('username', username)
+      .eq('username', normalizedUsername)
       .maybeSingle();
 
     if (profileError || !profileData) {
