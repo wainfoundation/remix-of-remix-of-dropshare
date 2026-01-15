@@ -171,9 +171,11 @@ const Create = () => {
       if (postError) throw postError;
 
       // Upload additional media
-      if (mediaItems.length > 1) {
-        for (let i = 1; i < mediaItems.length; i++) {
+      if (mediaItems && mediaItems.length > 1) {
+        const mediaCount = mediaItems.length;
+        for (let i = 1; i < mediaCount; i++) {
           const media = mediaItems[i];
+          if (!media) continue;
           
           const filePath = generateFilePath(user.id, media.file.name, 'posts');
           const { url: mediaUrl, error: mediaUploadError } = await uploadFile(media.file, filePath);

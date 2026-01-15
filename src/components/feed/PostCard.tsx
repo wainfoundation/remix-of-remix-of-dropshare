@@ -138,28 +138,28 @@ const PostCard = ({ post, onLike, onSave }: PostCardProps) => {
 
       {/* Content */}
       {isTextOnly ? (
-        // Text-only post or reel/tweet style
-        <div className={cn(
-          "px-4 py-4",
-          isReel 
-            ? "bg-gradient-to-br from-primary/5 to-primary/10 border-y border-border" 
-            : "bg-secondary/30"
-        )}>
-          {post.title && (
-            <h3 className="font-bold text-lg mb-2">{post.title}</h3>
-          )}
-          <p className={cn(
-            "whitespace-pre-wrap",
-            isReel ? "text-lg font-medium leading-relaxed" : "text-base"
+        // Text-only post or reel/tweet style (X.com inspired)
+        <Link to={`/post/${post.id}`} className="block">
+          <div className={cn(
+            "px-4 py-3 cursor-pointer transition-colors hover:bg-secondary/50",
+            isReel && "border-l-2 border-primary"
           )}>
-            {post.caption}
-          </p>
-          {post.description && (
-            <p className="text-sm text-muted-foreground mt-2 whitespace-pre-wrap">
-              {post.description}
+            {post.title && (
+              <h3 className="font-bold text-xl mb-2">{post.title}</h3>
+            )}
+            <p className={cn(
+              "whitespace-pre-wrap break-words",
+              isReel ? "text-base leading-relaxed" : "text-[15px] leading-normal"
+            )}>
+              {post.caption}
             </p>
-          )}
-        </div>
+            {post.description && (
+              <p className="text-sm text-muted-foreground mt-3 whitespace-pre-wrap leading-relaxed border-l-2 border-border pl-3">
+                {post.description}
+              </p>
+            )}
+          </div>
+        </Link>
       ) : post.image_url ? (
         // Image/Video post
         <div className="relative aspect-square w-full bg-secondary">
@@ -244,22 +244,22 @@ const PostCard = ({ post, onLike, onSave }: PostCardProps) => {
           </p>
         )}
 
-        {/* Title & Caption - only show for non-text posts */}
+        {/* Caption - only show for non-text posts */}
         {!isTextOnly && (
           <>
             {post.title && (
               <h3 className="mt-2 font-bold text-base">{post.title}</h3>
             )}
             {post.caption && (
-              <p className="mt-1 text-sm">
-                <Link to={`/profile/${post.profiles.username}`} className="font-semibold">
+              <p className="mt-1 text-sm whitespace-pre-wrap break-words">
+                <Link to={`/profile/${post.profiles.username}`} className="font-semibold hover:underline">
                   {post.profiles.username}
                 </Link>{' '}
                 {post.caption}
               </p>
             )}
             {post.description && (
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">
                 {post.description}
               </p>
             )}
