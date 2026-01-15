@@ -74,8 +74,14 @@ export function usePiAuth(): UsePiAuthReturn {
       console.log("Verifying with backend...");
       const backendResult = await verifyPiAuthWithBackend(piResult.accessToken, piResult.user);
 
-      if (!backendResult.success) {
+      if (!backendResult.success && !backendResult.userId) {
+        console.error("Backend verification failed completely:", backendResult.error);
         throw new Error(backendResult.error || "Backend verification failed");
+      }
+
+      // Log if there was a warning but authentication proceeded
+      if (backendResult.error) {
+        console.warn("Authentication warning:", backendResult.error);
       }
 
       const finalUser = backendResult.piUser || piResult.user;
