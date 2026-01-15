@@ -12,7 +12,7 @@ import { Store, ShoppingBag, Sparkles, ArrowLeft, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 type AccountType = 'business' | 'creator' | 'shopper';
-type SignupStep = 'select-type' | 'fill-details' | 'authenticating';
+type SignupStep = 'authenticate-first' | 'select-type' | 'fill-details' | 'authenticating';
 
 const Signup = () => {
   const { profile, loading, signUpWithPi } = useAuth();
@@ -20,7 +20,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [step, setStep] = useState<SignupStep>('select-type');
+  const [step, setStep] = useState<SignupStep>('authenticate-first');
   const [selectedType, setSelectedType] = useState<AccountType | null>(null);
   const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -210,6 +210,20 @@ const Signup = () => {
     }
   };
 
+  const handleAuthenticate = async () => {
+    try {
+      const authResult = await authenticate(["username", "payments"]);
+      if (authResult.success) {
+        setStep('select-type');
+      } else {
+        toast({ title: 'Authentication failed. Please try again.', variant: 'destructive' });
+      }
+    } catch (error) {
+      console.error('Authentication failed:', error);
+      toast({ title: 'Authentication failed. Please try again.', variant: 'destructive' });
+    }
+  };
+
   if (loading) {
     return <LoadingLogo />;
   }
@@ -354,6 +368,81 @@ const Signup = () => {
   }
 
   // Step 1: Select account type
+  if (step === 'select-type') {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center px-4">
+        <div className="w-full max-w-sm space-y-8">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <div className="flex justify-center mb-4">
+              <AppLogo size="xl" />
+            </div>
+            <h1 className="text-4xl font-bold">DropShare</h1>
+            <p className="text-muted-foreground">
+              Join the community of products lovers
+            </p>
+          </div>
+
+          {/* Account Type Selection */}
+          <div className="space-y-3">
+            {accountTypes.map(({ type, icon: Icon, title, description }) => (
+              <button
+                key={type}
+                onClick={() => handleTypeSelect(type)}
+                className={`flex w-full items-center gap-4 p-4 rounded-xl border-2 transition-all ${
+                  selectedType === type
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-muted-foreground/30'
+                }`}
+              >
+                <div className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                  selectedType === type ? 'bg-primary text-primary-foreground' : 'bg-secondary'
+                }`}>
+                  <Icon className="h-6 w-6" />
+                </div>
+                <div className="flex-1 text-left">
+                  <span className="font-semibold">{title}</span>
+                  <p className="text-sm text-muted-foreground">{description}</p>
+                </div>
+                {selectedType === type && (
+                  <Check className="h-5 w-5 text-primary" />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Continue Button */}
+          <Button
+            onClick={handleContinue}
+            disabled={!selectedType || !sdkReady}
+            className="w-full h-12 text-base font-semibold"
+          >
+            {!sdkReady ? (
+              <>
+                <LoadingLogo size="sm" className="mr-2" />
+                Initializing...
+              </>
+            ) : (
+              'Continue'
+            )}
+          </Button>
+
+          {sdkError && (
+            <p className="text-xs text-destructive text-center">{sdkError}</p>
+          )}
+
+          <p className="text-center text-sm text-muted-foreground">
+            Already have an account?{' '}
+            <Link to="/login" className="font-semibold text-primary hover:underline">
+              Log in
+            </Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Step 0: Authenticate with Pi
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-8">
@@ -362,66 +451,26 @@ const Signup = () => {
           <div className="flex justify-center mb-4">
             <AppLogo size="xl" />
           </div>
-          <h1 className="text-4xl font-bold">DropShare</h1>
-          <p className="text-muted-foreground">
-            Join the community of products lovers
+          <h1 className="text-4xl font-bold">Welcome to DropShare</h1>
+          <p className="text-muted-foreground mb-6">
+            Please authenticate with Pi to continue.
           </p>
         </div>
 
-        {/* Account Type Selection */}
+        {/* Actions */}
         <div className="space-y-3">
-          {accountTypes.map(({ type, icon: Icon, title, description }) => (
-            <button
-              key={type}
-              onClick={() => handleTypeSelect(type)}
-              className={`flex w-full items-center gap-4 p-4 rounded-xl border-2 transition-all ${
-                selectedType === type
-                  ? 'border-primary bg-primary/5'
-                  : 'border-border hover:border-muted-foreground/30'
-              }`}
-            >
-              <div className={`flex h-12 w-12 items-center justify-center rounded-full ${
-                selectedType === type ? 'bg-primary text-primary-foreground' : 'bg-secondary'
-              }`}>
-                <Icon className="h-6 w-6" />
-              </div>
-              <div className="flex-1 text-left">
-                <span className="font-semibold">{title}</span>
-                <p className="text-sm text-muted-foreground">{description}</p>
-              </div>
-              {selectedType === type && (
-                <Check className="h-5 w-5 text-primary" />
-              )}
-            </button>
-          ))}
+          <Button
+            onClick={handleAuthenticate}
+            disabled={piLoading}
+            className="w-full h-12 text-base font-semibold"
+          >
+            {piLoading ? 'Authenticating...' : 'Sign in with Pi'}
+          </Button>
         </div>
-
-        {/* Continue Button */}
-        <Button
-          onClick={handleContinue}
-          disabled={!selectedType || !sdkReady}
-          className="w-full h-12 text-base font-semibold"
-        >
-          {!sdkReady ? (
-            <>
-              <LoadingLogo size="sm" className="mr-2" />
-              Initializing...
-            </>
-          ) : (
-            'Continue'
-          )}
-        </Button>
 
         {sdkError && (
           <p className="text-xs text-destructive text-center">{sdkError}</p>
         )}
-
-        <p className="text-center text-sm text-muted-foreground">
-          Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-primary hover:underline">
-            Log in
-          </Link>
-        </p>
       </div>
     </div>
   );
