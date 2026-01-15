@@ -32,8 +32,8 @@
   <script>
     // Initialize Pi SDK immediately as per Pi documentation
     if (window.Pi) {
-      // Force sandbox mode
-      const forceSandbox = true;
+      // Disable sandbox mode for production
+      const forceSandbox = false;
 
       window.Pi.init({ 
         version: "2.0", 

@@ -40,7 +40,7 @@ export function PiPaymentButton({
           return;
         }
 
-        await initPiSdk({ version: "2.0", sandbox: true });
+        await initPiSdk({ version: "2.0", sandbox: false });
         setSdkReady(true);
       } catch (err) {
         console.error("Failed to initialize Pi SDK:", err);
