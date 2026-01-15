@@ -1,4 +1,4 @@
-import { Home, Users, PlusSquare, Video, User, Menu } from 'lucide-react';
+import { Home, Users, PlusSquare, Video, Film, User, Menu } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,8 +12,8 @@ const BottomNav = () => {
   const navItems = [
     { icon: Home, path: '/', label: 'Home' },
     { icon: Users, path: '/pioneer', label: 'Pioneer' },
-    { icon: PlusSquare, path: '/create', label: 'Create' },
     { icon: Video, path: '/reels', label: 'Reels' },
+    { icon: Film, path: '/videos', label: 'Videos' },
     { icon: User, path: profile ? `/profile/${profile.username}` : '/login', label: 'Profile' },
     { icon: Menu, path: '/menu', label: 'Menu' },
   ];

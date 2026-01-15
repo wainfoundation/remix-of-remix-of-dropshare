@@ -34,6 +34,7 @@ import {
   CreditCard,
   UserCheck,
   ExternalLink,
+  Film,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -69,6 +70,8 @@ const Menu = () => {
     { icon: Users, label: 'Pioneer', path: '/pioneer' },
     { icon: Search, label: 'Explore', path: '/explore' },
     { icon: TrendingUp, label: 'Trending', path: '/trending' },
+    { icon: Video, label: 'Reels', path: '/reels' },
+    { icon: Film, label: 'Videos', path: '/videos' },
   ];
 
   // Creation & Sharing

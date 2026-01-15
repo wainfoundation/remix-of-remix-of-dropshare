@@ -494,6 +494,7 @@ export type Database = {
           created_at: string
           display_name: string
           id: string
+          privacy: string | null
           store_category: string | null
           updated_at: string
           user_id: string
@@ -507,6 +508,7 @@ export type Database = {
           created_at?: string
           display_name: string
           id?: string
+          privacy?: string | null
           store_category?: string | null
           updated_at?: string
           user_id: string
@@ -520,6 +522,7 @@ export type Database = {
           created_at?: string
           display_name?: string
           id?: string
+          privacy?: string | null
           store_category?: string | null
           updated_at?: string
           user_id?: string

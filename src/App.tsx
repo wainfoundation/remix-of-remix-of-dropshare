@@ -27,6 +27,7 @@ import StoryViewer from "./pages/StoryViewer";
 import Notifications from "./pages/Notifications";
 import Reels from "./pages/Reels";
 import CreateReel from "./pages/CreateReel";
+import VideoFeed from "./pages/VideoFeed";
 import Analytics from "./pages/Analytics";
 import Saved from "./pages/Saved";
 import NotFound from "./pages/NotFound";
@@ -107,6 +108,7 @@ const AppContent = () => {
           <Route path="/reels" element={<Reels />} />
           <Route path="/reels/:reelId" element={<Reels />} />
           <Route path="/create-reel" element={<CreateReel />} />
+          <Route path="/videos" element={<VideoFeed />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/saved" element={<Saved />} />
           <Route path="/terms" element={<Navigate to="/legal/terms" replace />} />

@@ -1,4 +1,4 @@
-import { Home, Search, PlusSquare, MessageCircle, User, Menu, Sun, Moon, LogOut, BarChart3, Bookmark, Users, TrendingUp, Bell, Video, Megaphone, Shield, HelpCircle, FileText, Code, Briefcase, Info, Cookie, Settings } from 'lucide-react';
+import { Home, Search, PlusSquare, MessageCircle, User, Menu, Sun, Moon, LogOut, BarChart3, Bookmark, Users, TrendingUp, Bell, Video, Film, Megaphone, Shield, HelpCircle, FileText, Code, Briefcase, Info, Cookie, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -33,6 +33,7 @@ const Sidebar = ({ mobile = false, onNavigate }: SidebarProps) => {
     { icon: TrendingUp, path: '/trending', label: 'Trending' },
     { icon: PlusSquare, path: '/create', label: 'Create' },
     { icon: Video, path: '/reels', label: 'Reels' },
+    { icon: Film, path: '/videos', label: 'Videos' },
     { icon: MessageCircle, path: '/messages', label: 'Messages' },
     { icon: Bell, path: '/notifications', label: 'Notifications' },
     { icon: Megaphone, path: '/ads', label: 'Ads' },

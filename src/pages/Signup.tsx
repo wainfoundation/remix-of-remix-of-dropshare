@@ -7,7 +7,7 @@ import { AppLogo } from '@/components/AppLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Store, ShoppingBag, Sparkles, ArrowLeft } from 'lucide-react';
+import { Store, ShoppingBag, Sparkles, ArrowLeft, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 type AccountType = 'business' | 'creator' | 'shopper';
@@ -280,7 +280,7 @@ const Signup = () => {
           <div className="space-y-3">
             <Button
               onClick={handleCompleteSignup}
-              disabled={!displayName.trim() || isSubmitting || !sdkReady || (selectedType === 'business' && !storeName.trim())}
+              disabled={!displayName.trim() || isSubmitting || (selectedType === 'business' && !storeName.trim())}
               className="w-full h-12 text-base font-semibold"
             >
               {isSubmitting ? (
@@ -302,10 +302,6 @@ const Signup = () => {
               Back
             </Button>
           </div>
-
-          {sdkError && (
-            <p className="text-xs text-destructive text-center">{sdkError}</p>
-          )}
 
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{' '}
@@ -400,17 +396,13 @@ const Signup = () => {
         {/* Actions */}
         <div className="space-y-3">
           <Button
-            onClick={handleAuthenticate}
+            onClick={() => navigate('/login')}
             disabled={piLoading}
             className="w-full h-12 text-base font-semibold"
           >
             {piLoading ? 'Authenticating...' : 'Sign in with Pi'}
           </Button>
         </div>
-
-        {sdkError && (
-          <p className="text-xs text-destructive text-center">{sdkError}</p>
-        )}
       </div>
     </div>
   );
