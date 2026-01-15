@@ -15,6 +15,7 @@ interface Profile {
   email?: string | null;
   created_at: string;
   updated_at: string;
+  privacy: 'public' | 'private'; // Added privacy field
 }
 
 interface AuthContextType {

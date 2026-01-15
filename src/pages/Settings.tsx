@@ -50,6 +50,7 @@ const Settings = () => {
   const [notifications, setNotifications] = useState(true);
   const [showAccountTypeDialog, setShowAccountTypeDialog] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(profile?.privacy === 'private');
 
   const handleLogout = async () => {
     await signOut();
@@ -107,6 +108,37 @@ const Settings = () => {
     } finally {
       setIsUpdating(false);
       setShowAccountTypeDialog(false);
+    }
+  };
+
+  const handlePrivacyToggle = async () => {
+    if (!user) return;
+
+    const newPrivacy = isPrivate ? 'public' : 'private';
+    setIsUpdating(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ privacy: newPrivacy })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      await refreshProfile();
+      setIsPrivate(!isPrivate);
+      toast({
+        title: 'Privacy updated',
+        description: `Your account is now ${newPrivacy}.`,
+      });
+    } catch (error) {
+      console.error('Error updating privacy:', error);
+      toast({
+        title: 'Failed to update',
+        description: 'Could not update privacy settings. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -293,7 +325,22 @@ const Settings = () => {
           </div>
         ))}
 
-        <Separator />
+        {/* Privacy Settings */}
+        <div className="py-4">
+          <h2 className="px-4 mb-2 text-sm font-medium text-muted-foreground">
+            Privacy Settings
+          </h2>
+          <div className="flex items-center justify-between py-4">
+            <div>
+              <h4 className="font-medium">Privacy</h4>
+              <p className="text-sm text-muted-foreground">
+                Set your account as public or private.
+              </p>
+            </div>
+            <Switch checked={isPrivate} onCheckedChange={handlePrivacyToggle} disabled={isUpdating} />
+          </div>
+          <Separator />
+        </div>
 
         {/* Logout */}
         <div className="p-4">

@@ -78,58 +78,31 @@ export function PiAuthComponent() {
       // Authenticate with Pi Network following official documentation
       const result = await piAuthenticate(["username", "payments"]);
 
-      if (result.success && result.userId) {
-        // Call the AuthContext signInWithPi method
-        const authResult = await signInWithPi(result.userId);
-        
-        if (authResult.error) {
-          throw authResult.error;
-        }
+      if (result.success) {
+        console.log('Pi authentication successful:', result);
 
-        // Show appropriate notification based on user status
         if (result.isNewUser) {
-          toast({
-            title: '🎉 Welcome to DropShare!',
-            description: 'New account created successfully. Complete your profile to get started.',
-            duration: 5000,
-          });
-          console.log('New user detected - redirecting to signup');
-          navigate('/signup');
+          console.log('New user detected. Redirecting to sign-up page.');
+          navigate(`/signup?userId=${result.userId}`);
         } else {
-          toast({
-            title: '👋 Welcome back!',
-            description: 'Successfully signed in to your existing account.',
-            duration: 4000,
-          });
-          console.log('Existing user detected - redirecting to home');
+          await signInWithPi(result.userId!);
           navigate('/');
         }
       } else {
-        // Authentication failed
-        const errorMessage = result.isNewUser === undefined 
-          ? 'Pi authentication failed. Please try again.' 
-          : 'Account verification failed. Please try again.';
-        setSdkError(errorMessage);
-        
+        console.error('Pi authentication failed:', result);
         toast({
           title: 'Authentication Failed',
-          description: errorMessage,
+          description: 'Unable to authenticate with Pi Network. Please try again.',
           variant: 'destructive',
-          duration: 4000,
         });
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to sign in with Pi';
-      setSdkError(errorMessage);
-      
+    } catch (error) {
+      console.error('Error during Pi authentication:', error);
       toast({
-        title: 'Sign In Error',
-        description: errorMessage,
+        title: 'Authentication Error',
+        description: 'An unexpected error occurred. Please try again.',
         variant: 'destructive',
-        duration: 4000,
       });
-      
-      console.error('Pi authentication error:', err);
     }
   };
 
