@@ -349,7 +349,7 @@ const PostDetail = () => {
           )}
           {post.price && (
             <div className="absolute bottom-4 left-4 rounded-full bg-background/90 px-4 py-2 font-semibold backdrop-blur">
-              π{post.price.toFixed(2)}
+              ${post.price.toFixed(2)}
             </div>
           )}
         </div>

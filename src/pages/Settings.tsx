@@ -43,6 +43,12 @@ import {
 
 type AccountType = 'business' | 'creator' | 'shopper';
 
+declare global {
+  interface Window {
+    Pi?: any;
+  }
+}
+
 const Settings = () => {
   const navigate = useNavigate();
   const { signOut, profile, user, refreshProfile } = useAuth();
@@ -51,6 +57,37 @@ const Settings = () => {
   const [showAccountTypeDialog, setShowAccountTypeDialog] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isPrivate, setIsPrivate] = useState(profile?.privacy === 'private');
+
+  const requestPiPayment = async (type: AccountType) => {
+    const pricePi = 10;
+    await new Promise<void>((resolve, reject) => {
+      if (typeof window === 'undefined' || !window.Pi) {
+        return reject(new Error('Pi SDK not available. Please open this app in Pi Browser.'));
+      }
+      try {
+        window.Pi.createPayment(
+          {
+            amount: pricePi,
+            memo: `Switch to ${type} account`,
+            metadata: { purpose: 'account_switch', type, userId: user?.id },
+          },
+          {
+            onReadyForServerApproval: () => {
+              console.log('Pi payment ready for approval (skipped)');
+            },
+            onReadyForServerCompletion: () => {
+              console.log('Pi payment completed (sandbox accepted)');
+              resolve();
+            },
+            onCancel: () => reject(new Error('Payment cancelled')),
+            onError: (e: any) => reject(e instanceof Error ? e : new Error('Payment failed')),
+          }
+        );
+      } catch (e) {
+        reject(e instanceof Error ? e : new Error('Unable to start payment'));
+      }
+    });
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -62,13 +99,13 @@ const Settings = () => {
       type: 'business' as AccountType,
       icon: Store,
       title: 'Business',
-      description: 'Share products with Pi pricing & links',
+      description: 'Share products with Pi pricing & links • 10π/mo',
     },
     {
       type: 'creator' as AccountType,
       icon: Sparkles,
       title: 'Creator',
-      description: 'Share content & grow your audience',
+      description: 'Share content & grow your audience • 10π/mo',
     },
     {
       type: 'shopper' as AccountType,
@@ -86,12 +123,46 @@ const Settings = () => {
 
     setIsUpdating(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ account_type: newType })
-        .eq('user_id', user.id);
+      if (newType === 'business' || newType === 'creator') {
+        await requestPiPayment(newType);
 
-      if (error) throw error;
+        const { error: fnError } = await supabase.functions.invoke('record-payment', {
+          body: { userId: user.id, plan: 'monthly_10pi', accountType: newType },
+        });
+
+        if (fnError) {
+          console.warn('record-payment invocation failed, applying local fallback', fnError);
+          const now = new Date();
+          const newExpiry = new Date(now.getTime());
+          newExpiry.setDate(newExpiry.getDate() + 30);
+          const fallbackUpdate: any = {
+            account_type: newType,
+            desired_account_type: newType,
+            subscription_status: 'active',
+            subscription_plan: 'monthly_10pi',
+            subscription_expires_at: newExpiry.toISOString(),
+            last_payment_at: now.toISOString(),
+          };
+          const { error: fallbackErr } = await supabase
+            .from('profiles')
+            .update(fallbackUpdate)
+            .eq('user_id', user.id);
+          if (fallbackErr) throw fallbackErr;
+        }
+      } else {
+        const updates: any = {
+          account_type: 'shopper',
+          desired_account_type: null,
+          subscription_status: 'canceled',
+          subscription_plan: null,
+          subscription_expires_at: null,
+        };
+        const { error } = await supabase
+          .from('profiles')
+          .update(updates)
+          .eq('user_id', user.id);
+        if (error) throw error;
+      }
 
       await refreshProfile();
       toast({

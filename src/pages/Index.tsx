@@ -13,7 +13,7 @@ import { usePiAdNetwork } from '@/hooks/use-pi-adnetwork';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useScrollDirection } from '@/hooks/use-scroll-direction';
-import { Search, MessageCircle, Bookmark, Bell } from 'lucide-react';
+import { Search, MessageCircle, Bookmark, Bell, Plus } from 'lucide-react';
 import { AppLogo } from '@/components/AppLogo';
 import { LoadingLogo } from '@/components/ui/loading-logo';
 
@@ -386,6 +386,16 @@ const Index = () => {
           onClose={() => setShowInterstitialAd(false)}
         />
       </div>
+
+      {profile && (
+        <Button
+          size="lg"
+          className="fixed bottom-20 right-4 md:bottom-24 md:right-8 rounded-full shadow-lg h-12 w-12 p-0"
+          onClick={() => navigate('/create')}
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
+      )}
     </MainLayout>
   );
 };

@@ -42,6 +42,7 @@ Added columns on `public.profiles`:
 ## Frontend Wiring
 
 - Signup charges 10π for Business/Creator, then calls `record-payment` to set expiry and status.
+- Settings account-type changes now require 10π when switching to Business/Creator and call `record-payment`; switching to Shopper is free and clears subscription fields.
 - Existing UI continues to read `profiles.account_type` as the effective tier.
 - `desired_account_type` is set during signup for paid tiers to support seamless renewal.
 
