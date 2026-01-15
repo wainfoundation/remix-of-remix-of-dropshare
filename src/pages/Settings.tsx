@@ -356,6 +356,63 @@ const Settings = () => {
 
         <Separator />
 
+        {/* Subscription/Plan Panel */}
+        {profile && (
+          <div className="p-4 space-y-4">
+            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border border-primary/20 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-sm">Current Plan</h3>
+                  <p className="text-sm text-muted-foreground capitalize">
+                    {profile.account_type === 'shopper' 
+                      ? 'Free' 
+                      : `${profile.account_type} - 10π/month`}
+                  </p>
+                </div>
+                <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  profile.subscription_status === 'active'
+                    ? 'bg-green-500/20 text-green-700 dark:text-green-300'
+                    : profile.subscription_status === 'expired'
+                    ? 'bg-orange-500/20 text-orange-700 dark:text-orange-300'
+                    : 'bg-muted text-muted-foreground'
+                }`}>
+                  {profile.subscription_status === 'active' ? 'Active' : 
+                   profile.subscription_status === 'expired' ? 'Expired' : 
+                   'None'}
+                </div>
+              </div>
+
+              {profile.subscription_expires_at && profile.account_type !== 'shopper' && (
+                <div className="space-y-2 pt-2 border-t border-primary/10">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Expires:</span>
+                    <span className="font-medium">
+                      {new Date(profile.subscription_expires_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Renews:</span>
+                    <span className="font-medium">
+                      {new Date(new Date(profile.subscription_expires_at).getTime()).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground pt-1">
+                    ℹ️ Your subscription automatically renews on the expiry date. Your plan will continue uninterrupted.
+                  </p>
+                </div>
+              )}
+
+              {profile.account_type === 'shopper' && (
+                <p className="text-xs text-muted-foreground pt-2">
+                  Upgrade to Business or Creator account for advanced features (10π/month).
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        <Separator />
+
         {/* Settings sections */}
         {settingsSections.map((section) => (
           <div key={section.title} className="py-4">

@@ -108,6 +108,15 @@ const Signup = () => {
     }
   };
 
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    // Remove @ if user types it
+    value = value.replace(/^@+/, '');
+    // Remove spaces and special chars except underscore
+    value = value.replace(/[^a-zA-Z0-9_]/g, '');
+    setUsername(value.toLowerCase());
+  };
+
   const handleCompleteSignup = async () => {
     if (!userId) {
       toast({
@@ -287,16 +296,20 @@ const Signup = () => {
           {/* Form */}
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Pi Username</Label>
-              <Input
-                id="username"
-                value={username}
-                disabled
-                placeholder="Your Pi username"
-                className="h-12 bg-muted"
-              />
+              <Label htmlFor="username">Username</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
+                <Input
+                  id="username"
+                  value={username}
+                  onChange={handleUsernameChange}
+                  placeholder="username"
+                  className="h-12 pl-8"
+                  maxLength={20}
+                />
+              </div>
               <p className="text-xs text-muted-foreground">
-                Your Pi Network username (read-only)
+                Your unique username (letters, numbers, underscore only)
               </p>
             </div>
 

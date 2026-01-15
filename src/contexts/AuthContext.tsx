@@ -17,6 +17,14 @@ interface Profile {
   created_at: string;
   updated_at: string;
   privacy: 'public' | 'private'; // Added privacy field
+  // Subscription fields
+  desired_account_type: 'business' | 'creator' | null;
+  subscription_status: 'none' | 'active' | 'expired' | 'canceled' | null;
+  subscription_plan: string | null;
+  subscription_expires_at: string | null;
+  last_payment_at: string | null;
+  // Username change tracking
+  username_changed: boolean;
 }
 
 interface AuthContextType {
@@ -230,6 +238,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             bio: null,
             avatar_url: null,
             privacy: 'public',
+            username_changed: false,
           })
           .select()
           .single();
@@ -252,6 +261,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 bio: null,
                 avatar_url: null,
                 privacy: 'public',
+                username_changed: false,
               })
               .select()
               .single();

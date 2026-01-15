@@ -48,6 +48,7 @@ const EditProfile = () => {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [usernameChanged, setUsernameChanged] = useState(false);
 
   useEffect(() => {
     if (profile) {
@@ -57,6 +58,7 @@ const EditProfile = () => {
       setWebsiteUrl(profile.website_url || '');
       setStoreCategory(profile.store_category || '');
       setAvatarUrl(profile.avatar_url);
+      setUsernameChanged(profile.username_changed || false);
     }
   }, [profile]);
 
@@ -104,6 +106,12 @@ const EditProfile = () => {
 
     // Check username uniqueness if changed
     if (username !== profile.username) {
+      if (usernameChanged) {
+        toast({ title: 'Username can only be changed once', variant: 'destructive' });
+        setLoading(false);
+        return;
+      }
+
       const { data: existingUser } = await supabase
         .from('profiles')
         .select('id')
@@ -128,6 +136,7 @@ const EditProfile = () => {
         website_url: websiteUrl || null,
         store_category: storeCategory || null,
         avatar_url: newAvatarUrl,
+        username_changed: username !== profile.username ? true : usernameChanged,
       })
       .eq('user_id', user.id);
 
@@ -216,14 +225,38 @@ const EditProfile = () => {
         {/* Username */}
         <div className="space-y-2">
           <Label htmlFor="username">Username</Label>
-          <Input
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-            placeholder="username"
-          />
+          {usernameChanged ? (
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
+              <Input
+                id="username"
+                value={username}
+                disabled
+                className="h-12 pl-8 bg-muted"
+              />
+            </div>
+          ) : (
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
+              <Input
+                id="username"
+                value={username}
+                onChange={(e) => {
+                  let value = e.target.value;
+                  // Remove @ if user types it
+                  value = value.replace(/^@+/, '');
+                  // Remove spaces and special chars except underscore
+                  value = value.replace(/[^a-zA-Z0-9_]/g, '');
+                  setUsername(value.toLowerCase());
+                }}
+                placeholder="username"
+                className="h-12 pl-8"
+                maxLength={20}
+              />
+            </div>
+          )}
           <p className="text-xs text-muted-foreground">
-            Only lowercase letters, numbers, and underscores
+            {usernameChanged ? 'Username can only be changed once' : 'Your unique username (letters, numbers, underscore only) - can be changed once'}
           </p>
         </div>
 
