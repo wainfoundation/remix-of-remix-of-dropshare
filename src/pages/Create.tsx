@@ -29,8 +29,6 @@ const Create = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [caption, setCaption] = useState('');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [productName, setProductName] = useState('');
   const [price, setPrice] = useState('');
   const [externalLink, setExternalLink] = useState('');
@@ -149,8 +147,6 @@ const Create = () => {
         user_id: user.id,
         image_url: imageUrl,
         caption: caption || null,
-        title: title || null,
-        description: description || null,
         post_type: postType,
         character_count: caption.length,
       };
@@ -446,29 +442,6 @@ const Create = () => {
               }}
               rows={postType === 'text' ? 6 : postType === 'reel' ? 3 : 4}
               className={postType === 'reel' ? 'resize-none' : ''}
-            />
-          </div>
-
-          {/* Optional: Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title" className="text-muted-foreground">Title (optional)</Label>
-            <Input
-              id="title"
-              placeholder="Add a title for your post"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </div>
-
-          {/* Optional: Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-muted-foreground">Description (optional)</Label>
-            <Textarea
-              id="description"
-              placeholder="Add more details..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
             />
           </div>
         </form>
