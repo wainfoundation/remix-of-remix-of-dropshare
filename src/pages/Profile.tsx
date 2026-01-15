@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Settings, Grid3X3, Bookmark, ExternalLink, MessageCircle, Bell, Film, MoreHorizontal, BadgeCheck, UserPlus, Play } from 'lucide-react';
+import VerifiedBadge from '@/components/ui/VerifiedBadge';
 import MainLayout from '@/components/layout/MainLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -64,8 +65,10 @@ const Profile = () => {
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
   const [mutualFollowers, setMutualFollowers] = useState<MutualFollower[]>([]);
+  const [hasActiveStories, setHasActiveStories] = useState(false);
 
   const isOwnProfile = currentUserProfile?.username === username;
+  const isWain2020 = profile?.username?.toLowerCase() === '@wain2020';
   const canMessage = !isOwnProfile && user && (profile?.account_type === 'business' || profile?.account_type === 'creator');
 
   useEffect(() => {
@@ -97,6 +100,17 @@ const Profile = () => {
     }
 
     setProfile(profileData as Profile);
+
+    // Check for active stories
+    const now = new Date().toISOString();
+    const { data: storiesData } = await supabase
+      .from('stories')
+      .select('id')
+      .eq('user_id', profileData.user_id)
+      .gt('expires_at', now)
+      .limit(1);
+    
+    setHasActiveStories(storiesData && storiesData.length > 0);
 
     // Fetch posts
     const { data: postsData } = await supabase
@@ -283,7 +297,9 @@ const Profile = () => {
           <div className="flex items-center justify-between mb-4 md:hidden">
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-semibold">{profile.username.replace('@', '')}</h1>
-              {(profile.account_type === 'business' || profile.account_type === 'creator' || profile.is_verified) && (
+              {isWain2020 ? (
+                <VerifiedBadge size="sm" color="gold" />
+              ) : (profile.account_type === 'business' || profile.account_type === 'creator' || profile.is_verified) && (
                 <BadgeCheck className="h-5 w-5 text-primary fill-primary" />
               )}
             </div>
@@ -302,11 +318,27 @@ const Profile = () => {
           </div>
 
           <div className="flex items-start gap-6 md:gap-12">
-            {/* Avatar with gradient ring */}
+            {/* Avatar with story indicator */}
             <div className="relative flex-shrink-0">
-              {/* Instagram-style gradient ring */}
-              <div className="relative p-[3px] bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full">
-                <div className="bg-background rounded-full p-[3px]">
+              {hasActiveStories ? (
+                <button
+                  onClick={() => navigate(`/stories/${profile.user_id}`)}
+                  className="relative block"
+                >
+                  {/* Neon gradient ring for active stories */}
+                  <div className="relative p-[3px] bg-gradient-to-tr from-cyan-400 via-fuchsia-500 to-lime-400 rounded-full animate-pulse">
+                    <div className="bg-background rounded-full p-[3px]">
+                      <Avatar className="h-20 w-20 md:h-36 md:w-36">
+                        <AvatarImage src={profile.avatar_url || undefined} />
+                        <AvatarFallback className="text-2xl md:text-4xl bg-secondary">
+                          {profile.display_name[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                  </div>
+                </button>
+              ) : (
+                <div className="relative">
                   <Avatar className="h-20 w-20 md:h-36 md:w-36">
                     <AvatarImage src={profile.avatar_url || undefined} />
                     <AvatarFallback className="text-2xl md:text-4xl bg-secondary">
@@ -314,7 +346,7 @@ const Profile = () => {
                     </AvatarFallback>
                   </Avatar>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Info */}
@@ -322,7 +354,9 @@ const Profile = () => {
               {/* Desktop username row */}
               <div className="hidden md:flex flex-wrap items-center gap-3 mb-5">
                 <h1 className="text-xl font-normal">{profile.username.replace('@', '')}</h1>
-                {(profile.account_type === 'business' || profile.account_type === 'creator' || profile.is_verified) && (
+                {isWain2020 ? (
+                  <VerifiedBadge size="sm" color="gold" />
+                ) : (profile.account_type === 'business' || profile.account_type === 'creator' || profile.is_verified) && (
                   <BadgeCheck className="h-5 w-5 text-primary fill-primary" />
                 )}
                 {isOwnProfile ? (

@@ -158,6 +158,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Ensure username starts with '@'
       const formattedUsername = username.startsWith('@') ? username : `@${username}`;
+      const desiredUsername = formattedUsername.toLowerCase();
+
+      // Check if desired username is taken by another user
+      const { data: usernameOwner, error: usernameCheckError } = await supabase
+        .from('profiles')
+        .select('user_id, username')
+        .eq('username', desiredUsername)
+        .maybeSingle();
+
+      if (usernameCheckError) {
+        console.warn('Username availability check failed:', usernameCheckError.message);
+      }
+
+      // Compute final username to use (preserve '@')
+      const finalUsername = usernameOwner && usernameOwner.user_id !== userId
+        ? `${desiredUsername}_${userId.slice(0, 6)}`
+        : desiredUsername;
 
       // Check if profile already exists
       const existingProfile = await fetchProfile(userId);
@@ -167,7 +184,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { error } = await supabase
           .from('profiles')
           .update({
-            username: formattedUsername.toLowerCase(),
+            username: finalUsername,
             display_name: displayName,
             account_type: accountType,
             website_url: websiteUrl || null,
@@ -182,7 +199,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .from('profiles')
           .insert({
             user_id: userId,
-            username: formattedUsername.toLowerCase(),
+            username: finalUsername,
             display_name: displayName,
             account_type: accountType,
             website_url: websiteUrl || null,
@@ -195,8 +212,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .single();
 
         if (error) {
-          console.error('Error creating profile:', error);
-          return { error };
+          // Handle duplicate username conflict gracefully by regenerating once
+          if ((error as any).code === '23505') {
+            const regeneratedUsername = `${desiredUsername}_${userId.slice(0, 8)}`;
+            const { data: retryProfile, error: retryError } = await supabase
+              .from('profiles')
+              .insert({
+                user_id: userId,
+                username: regeneratedUsername,
+                display_name: displayName,
+                account_type: accountType,
+                website_url: websiteUrl || null,
+                store_category: storeCategory || null,
+                bio: null,
+                avatar_url: null,
+                privacy: 'public',
+              })
+              .select()
+              .single();
+
+            if (retryError) {
+              console.error('Profile creation failed after retry:', retryError);
+              return { error: retryError };
+            }
+
+            console.log('Profile created after username regeneration:', retryProfile);
+          } else {
+            console.error('Error creating profile:', error);
+            return { error };
+          }
         }
 
         console.log('Profile created successfully:', newProfile);
