@@ -30,17 +30,15 @@
   <!-- Pi SDK - Must be included in HTML as per Pi documentation -->
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
   <script>
-    // Initialize Pi SDK immediately as per Pi documentation
+    // Initialize Pi SDK for MAINNET (Production)
+    // WARNING: This is configured for MAINNET - real Pi transactions will occur
     if (window.Pi) {
-      // Disable sandbox mode for production
-      const forceSandbox = false;
-
       window.Pi.init({ 
         version: "2.0", 
-        sandbox: forceSandbox 
+        sandbox: false  // MAINNET MODE - Production environment
       });
       
-      console.log('Pi SDK initialized | Sandbox:', forceSandbox);
+      console.log('✅ Pi SDK initialized for MAINNET (Production)');
     } else {
       console.warn('Pi SDK not available - ensure you are using Pi Browser');
     }

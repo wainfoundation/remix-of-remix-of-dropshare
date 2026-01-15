@@ -78,7 +78,7 @@ const Settings = () => {
               console.log('Pi payment ready for approval (skipped)');
             },
             onReadyForServerCompletion: () => {
-              console.log('Pi payment completed (sandbox accepted)');
+              console.log('✅ Pi payment completed on MAINNET');
               resolve();
             },
             onCancel: () => reject(new Error('Payment cancelled')),
