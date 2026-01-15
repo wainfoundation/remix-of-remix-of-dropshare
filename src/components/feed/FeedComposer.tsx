@@ -17,8 +17,6 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
   const { user, profile } = useAuth();
   const { toast } = useToast();
   const [text, setText] = useState('');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [showOptionalFields, setShowOptionalFields] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -32,15 +30,11 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
       const { error } = await supabase.from('posts').insert({
         user_id: user!.id,
         caption: text.trim(),
-        title: title.trim() || null,
-        description: description.trim() || null,
         post_type: 'text',
         character_count: text.trim().length,
       });
       if (error) throw error;
       setText('');
-      setTitle('');
-      setDescription('');
       setShowOptionalFields(false);
       toast({ title: 'Posted!', description: 'Your update is live.' });
       onPosted?.();
@@ -77,15 +71,11 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
         user_id: user.id,
         image_url: publicUrl,
         caption: text.trim() || null,
-        title: title.trim() || null,
-        description: description.trim() || null,
         post_type: isVideo ? 'video' : 'image',
         character_count: text.trim().length,
       });
       if (insertError) throw insertError;
       setText('');
-      setTitle('');
-      setDescription('');
       setShowOptionalFields(false);
       toast({ title: 'Posted!', description: isVideo ? 'Your video is live.' : 'Your photo is live.' });
       onPosted?.();
@@ -125,19 +115,7 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
           />
           {showOptionalFields && (
             <div className="mt-2 space-y-2">
-              <input
-                type="text"
-                placeholder="Title (optional)"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-input rounded-md bg-background"
-              />
-              <Textarea
-                placeholder="Description (optional)"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="min-h-[60px] resize-none text-sm"
-              />
+              {/* Optional fields section can be expanded here when needed */}
             </div>
           )}
           <div className="mt-2 flex items-center justify-between">

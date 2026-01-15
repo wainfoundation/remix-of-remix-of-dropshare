@@ -14,6 +14,7 @@ import {
   Store,
   Sparkles,
   ShoppingBag,
+  Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -55,6 +56,7 @@ const Settings = () => {
   const { theme, toggleTheme } = useTheme();
   const [notifications, setNotifications] = useState(true);
   const [showAccountTypeDialog, setShowAccountTypeDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isPrivate, setIsPrivate] = useState(profile?.privacy === 'private');
 
@@ -92,6 +94,39 @@ const Settings = () => {
   const handleLogout = async () => {
     await signOut();
     navigate('/login');
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+
+    setIsUpdating(true);
+    try {
+      // Delete user profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('user_id', user.id);
+
+      if (profileError) throw profileError;
+
+      // Sign out and redirect
+      await signOut();
+      toast({
+        title: 'Account deleted',
+        description: 'Your account and all data have been permanently deleted.',
+      });
+      navigate('/login');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      toast({
+        title: 'Failed to delete account',
+        description: 'Could not delete your account. Please try again or contact support.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUpdating(false);
+      setShowDeleteDialog(false);
+    }
   };
 
   const accountTypes = [
@@ -247,6 +282,12 @@ const Settings = () => {
           icon: Lock,
           label: 'Privacy',
           onClick: () => navigate('/legal/privacy'),
+        },
+        {
+          icon: Trash2,
+          label: 'Delete Account',
+          onClick: () => setShowDeleteDialog(true),
+          destructive: true,
         },
       ],
     },
@@ -427,13 +468,15 @@ const Settings = () => {
                     !item.toggle && !item.disabled
                       ? 'cursor-pointer transition-colors hover:bg-secondary'
                       : ''
-                  } ${item.disabled ? 'opacity-50' : ''}`}
+                  } ${item.disabled ? 'opacity-50' : ''} ${item.destructive ? 'text-destructive hover:bg-destructive/10' : ''}`}
                   onClick={item.toggle || item.disabled ? undefined : item.onClick}
                 >
                   <div className="flex items-center gap-3">
-                    <item.icon className="h-5 w-5 text-muted-foreground" />
+                    <item.icon className={`h-5 w-5 ${
+                      item.destructive ? 'text-destructive' : 'text-muted-foreground'
+                    }`} />
                     <div>
-                      <span>{item.label}</span>
+                      <span className={item.destructive ? 'font-medium' : ''}>{item.label}</span>
                       {item.subtitle && (
                         <p className="text-xs text-muted-foreground">{item.subtitle}</p>
                       )}
@@ -540,6 +583,40 @@ const Settings = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Account Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-destructive">Delete Account</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4">
+              <p>
+                Are you sure you want to permanently delete your account? This action cannot be undone.
+              </p>
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 space-y-2">
+                <p className="font-semibold text-sm text-destructive">What happens when you delete:</p>
+                <ul className="text-sm text-destructive/90 space-y-1 list-disc list-inside">
+                  <li>Your profile and all personal data will be permanently deleted</li>
+                  <li>All your posts and content will be removed</li>
+                  <li>Comments, likes, and follows associated with your account will be deleted</li>
+                  <li>Any active subscriptions will be canceled</li>
+                  <li>You will be immediately logged out</li>
+                </ul>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isUpdating}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteAccount}
+              disabled={isUpdating}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isUpdating ? 'Deleting...' : 'Delete Account'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

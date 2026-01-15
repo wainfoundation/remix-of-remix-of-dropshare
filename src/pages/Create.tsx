@@ -148,7 +148,7 @@ const Create = () => {
         image_url: imageUrl,
         caption: caption || null,
         post_type: postType,
-        character_count: caption.length,
+        character_count: caption ? caption.length : 0,
       };
 
       // Only add product fields for business accounts
