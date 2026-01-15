@@ -137,34 +137,39 @@ const Profile = () => {
       setIsFollowing(!!followData);
 
       // Fetch mutual followers (people who follow both you and this profile)
-      const { data: mutualData } = await supabase
+      // First get the IDs of people current user follows
+      const { data: currentUserFollowing } = await supabase
         .from('follows')
-        .select(`
-          follower:profiles!follows_follower_id_fkey(
-            id,
-            user_id,
-            username,
-            display_name,
-            avatar_url
-          )
-        `)
-        .eq('following_id', profileData.user_id)
-        .in('follower_id', [
-          // Get followers of current user
-          supabase
-            .from('follows')
-            .select('following_id')
-            .eq('follower_id', user.id)
-        ])
-        .limit(3);
+        .select('following_id')
+        .eq('follower_id', user.id);
 
-      if (mutualData && mutualData.length > 0) {
-        setMutualFollowers(
-          mutualData
-            .map((m: any) => m.follower)
-            .filter(Boolean)
-            .slice(0, 3)
-        );
+      if (currentUserFollowing && currentUserFollowing.length > 0) {
+        const followingIds = currentUserFollowing.map(f => f.following_id);
+
+        // Then find mutual followers
+        const { data: mutualData } = await supabase
+          .from('follows')
+          .select(`
+            follower:profiles!follows_follower_id_fkey(
+              id,
+              user_id,
+              username,
+              display_name,
+              avatar_url
+            )
+          `)
+          .eq('following_id', profileData.user_id)
+          .in('follower_id', followingIds)
+          .limit(3);
+
+        if (mutualData && mutualData.length > 0) {
+          setMutualFollowers(
+            mutualData
+              .map((m: any) => m.follower)
+              .filter(Boolean)
+              .slice(0, 3)
+          );
+        }
       }
     }
 
