@@ -371,10 +371,6 @@ const Signup = () => {
             Continue to Complete Profile
           </Button>
 
-          {sdkError && (
-            <p className="text-xs text-destructive text-center">{sdkError}</p>
-          )}
-
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{' '}
             <Link to="/login" className="font-semibold text-primary hover:underline">
