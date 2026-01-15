@@ -298,7 +298,7 @@ const Profile = () => {
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-semibold">{profile.username.replace('@', '')}</h1>
               {isWain2020 ? (
-                <VerifiedBadge size="sm" color="gold" />
+                <VerifiedBadge size="sm" />
               ) : (profile.account_type === 'business' || profile.account_type === 'creator' || profile.is_verified) && (
                 <BadgeCheck className="h-5 w-5 text-primary fill-primary" />
               )}
@@ -355,7 +355,7 @@ const Profile = () => {
               <div className="hidden md:flex flex-wrap items-center gap-3 mb-5">
                 <h1 className="text-xl font-normal">{profile.username.replace('@', '')}</h1>
                 {isWain2020 ? (
-                  <VerifiedBadge size="sm" color="gold" />
+                  <VerifiedBadge size="sm" />
                 ) : (profile.account_type === 'business' || profile.account_type === 'creator' || profile.is_verified) && (
                   <BadgeCheck className="h-5 w-5 text-primary fill-primary" />
                 )}

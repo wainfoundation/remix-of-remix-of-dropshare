@@ -212,8 +212,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .single();
 
         if (error) {
+          const code = (error as any).code;
           // Handle duplicate username conflict gracefully by regenerating once
-          if ((error as any).code === '23505') {
+          if (code === '23505') {
             const regeneratedUsername = `${desiredUsername}_${userId.slice(0, 8)}`;
             const { data: retryProfile, error: retryError } = await supabase
               .from('profiles')
@@ -237,6 +238,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             console.log('Profile created after username regeneration:', retryProfile);
+          } else if (code === '23503') {
+            // Foreign key violation against auth.users.
+            console.warn('Profile creation blocked: foreign key requires auth.users row. Apply migration 20260115_remove_profiles_fk.sql or create user via Supabase Auth.');
+            return { error: new Error('Profile creation requires a Supabase Auth user. Please deploy the profiles FK removal migration or sign in via Supabase Auth.') };
           } else {
             console.error('Error creating profile:', error);
             return { error };

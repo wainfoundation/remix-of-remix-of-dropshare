@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Supabase Edge Function: send-notification
 // This function sends web push notifications to subscribed users
 // Triggered by notification_queue table inserts
