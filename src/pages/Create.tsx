@@ -37,6 +37,7 @@ const Create = () => {
   const isBusiness = profile?.account_type === 'business';
   const isCreator = profile?.account_type === 'creator';
   const canCreate = isBusiness || isCreator;
+  const hasActiveSubscription = canCreate && profile?.subscription_status === 'active';
 
   const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -231,6 +232,25 @@ const Create = () => {
           <p className="mt-2 text-muted-foreground">
             Only creator and business accounts can create posts.
           </p>
+          <Button onClick={() => navigate('/settings')} className="mt-6">
+            Upgrade Account
+          </Button>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!hasActiveSubscription) {
+    return (
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+          <h2 className="text-xl font-semibold">Active Subscription Required</h2>
+          <p className="mt-2 text-muted-foreground">
+            Your subscription has expired. Please renew your plan to continue posting.
+          </p>
+          <Button onClick={() => navigate('/settings')} className="mt-6">
+            Renew Plan
+          </Button>
         </div>
       </MainLayout>
     );

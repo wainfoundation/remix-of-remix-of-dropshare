@@ -21,9 +21,26 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const canPostText = !!user && text.trim().length > 0;
+  const canCreate = profile?.account_type === 'creator' || profile?.account_type === 'business';
+  const hasActiveSubscription = canCreate && profile?.subscription_status === 'active';
+  const canPostText = !!user && text.trim().length > 0 && hasActiveSubscription;
 
   const handlePostText = async () => {
+    if (!user) {
+      toast({ title: 'Sign in to post', variant: 'destructive' });
+      return;
+    }
+
+    if (!canCreate) {
+      toast({ title: 'Creator or Business account required to post', variant: 'destructive' });
+      return;
+    }
+
+    if (!hasActiveSubscription) {
+      toast({ title: 'Active subscription required to post', variant: 'destructive' });
+      return;
+    }
+
     if (!canPostText) return;
     setSubmitting(true);
     try {
@@ -46,7 +63,21 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
   };
 
   const uploadMediaAndPost = async (file: File) => {
-    if (!user) return;
+    if (!user) {
+      toast({ title: 'Sign in to post', variant: 'destructive' });
+      return;
+    }
+
+    if (!canCreate) {
+      toast({ title: 'Creator or Business account required to post', variant: 'destructive' });
+      return;
+    }
+
+    if (!hasActiveSubscription) {
+      toast({ title: 'Active subscription required to post', variant: 'destructive' });
+      return;
+    }
+
     setSubmitting(true);
     try {
       // Validate file
@@ -101,6 +132,13 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
 
   return (
     <div className="border-b border-border bg-background px-4 py-3">
+      {!hasActiveSubscription && user && (
+        <div className="mb-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-2">
+          <p className="text-sm text-amber-900 dark:text-amber-200">
+            {!canCreate ? 'Only Creator and Business accounts can post' : 'Please renew your subscription to continue posting'}
+          </p>
+        </div>
+      )}
       <div className="flex gap-3">
         <Avatar className="h-10 w-10">
           <AvatarImage src={profile?.avatar_url || undefined} />
@@ -108,9 +146,10 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
         </Avatar>
         <div className="flex-1">
           <Textarea
-            placeholder="What's on your mind?"
+            placeholder={hasActiveSubscription ? "What's on your mind?" : "Posting disabled - Creator/Business account with active subscription required"}
             value={text}
             onChange={(e) => setText(e.target.value)}
+            disabled={!hasActiveSubscription}
             className="min-h-[44px] resize-none"
           />
           {showOptionalFields && (
@@ -125,7 +164,7 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
                 variant="ghost"
                 size="sm"
                 onClick={() => handlePickMedia('image/*')}
-                disabled={!user || submitting}
+                disabled={!hasActiveSubscription || submitting}
                 className="gap-2"
               >
                 <ImageIcon className="h-4 w-4" /> Photo
@@ -135,7 +174,7 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
                 variant="ghost"
                 size="sm"
                 onClick={() => handlePickMedia('video/*')}
-                disabled={!user || submitting}
+                disabled={!hasActiveSubscription || submitting}
                 className="gap-2"
               >
                 <VideoIcon className="h-4 w-4" /> Video
