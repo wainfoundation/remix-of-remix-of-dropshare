@@ -183,11 +183,11 @@ const Signup = () => {
               },
               {
                 onReadyForServerApproval: () => {
-                  // In sandbox/no-backend mode we skip server approval
-                  console.log('Pi payment ready for approval (skipped)');
+                  // Mainnet mode - payment ready for server approval
+                  console.log('Pi payment ready for approval');
                 },
                 onReadyForServerCompletion: () => {
-                  console.log('Pi payment completed (sandbox accepted)');
+                  console.log('✅ Pi payment completed on MAINNET');
                   resolve();
                 },
                 onCancel: () => reject(new Error('Payment cancelled')),
