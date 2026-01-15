@@ -59,6 +59,33 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (Database & Storage)
+- Pi Network SDK (Authentication & Payments)
+
+## Storage & Uploads
+
+All file uploads use Supabase Storage:
+- **Storage URL**: `https://zgbzubmazzxjylgdpdqi.supabase.co/storage/v1/object/public/uploads/`
+- **Bucket**: `uploads` (public)
+
+For detailed setup instructions, see [STORAGE_SETUP_GUIDE.md](./STORAGE_SETUP_GUIDE.md)
+
+### Quick Setup
+
+1. Run the storage migration:
+   ```bash
+   # In Supabase SQL Editor
+   # Execute: supabase/migrations/20260115_setup_storage.sql
+   ```
+
+2. Verify bucket exists in Supabase Dashboard → Storage
+
+3. Upload functionality is ready in:
+   - Profile pictures
+   - Posts (images/videos)
+   - Reels
+   - Stories
+   - Ads
 
 ## How can I deploy this project?
 

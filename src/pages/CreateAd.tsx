@@ -13,6 +13,7 @@ import { Slider } from '@/components/ui/slider';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { uploadFile, generateFilePath, validateFile } from '@/lib/storage';
 import { usePiPayment } from '@/hooks/use-pi-payment';
 
 const AD_TYPES = [
@@ -94,20 +95,24 @@ const CreateAd = () => {
 
       // Upload image if provided
       if (image) {
-        const fileExt = image.name.split('.').pop();
-        const fileName = `ads/${user.id}/${Date.now()}.${fileExt}`;
+        // Validate image
+        const validation = validateFile(image, {
+          maxSizeMB: 10,
+          allowedTypes: ['image/*']
+        });
+        
+        if (!validation.valid) {
+          throw new Error(validation.error || 'Invalid image');
+        }
+        
+        const filePath = generateFilePath(user.id, image.name, 'ads');
+        const { url, error: uploadError } = await uploadFile(image, filePath);
 
-        const { error: uploadError } = await supabase.storage
-          .from('uploads')
-          .upload(fileName, image);
+        if (uploadError || !url) {
+          throw uploadError || new Error('Failed to upload image');
+        }
 
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('uploads')
-          .getPublicUrl(fileName);
-
-        imageUrl = publicUrl;
+        imageUrl = url;
       }
 
       // Calculate dates

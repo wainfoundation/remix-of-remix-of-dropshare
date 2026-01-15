@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { uploadFile, generateFilePath, validateFile } from '@/lib/storage';
 
 interface FeedComposerProps {
   onPosted?: () => void;
@@ -54,11 +55,23 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
     if (!user) return;
     setSubmitting(true);
     try {
-      const ext = file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${ext}`;
-      const { error: uploadError } = await supabase.storage.from('uploads').upload(fileName, file);
-      if (uploadError) throw uploadError;
-      const { data: { publicUrl } } = supabase.storage.from('uploads').getPublicUrl(fileName);
+      // Validate file
+      const validation = validateFile(file, {
+        maxSizeMB: 100,
+        allowedTypes: ['image/*', 'video/*']
+      });
+      
+      if (!validation.valid) {
+        throw new Error(validation.error || 'Invalid file');
+      }
+      
+      const filePath = generateFilePath(user.id, file.name, 'posts');
+      const { url: publicUrl, error: uploadError } = await uploadFile(file, filePath);
+      
+      if (uploadError || !publicUrl) {
+        throw uploadError || new Error('Failed to upload file');
+      }
+      
       const isVideo = file.type.startsWith('video/');
       const { error: insertError } = await supabase.from('posts').insert({
         user_id: user.id,

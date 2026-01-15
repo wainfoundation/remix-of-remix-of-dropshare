@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { uploadFile, generateFilePath, validateFile } from '@/lib/storage';
 
 const CreateReel = () => {
   const navigate = useNavigate();
@@ -72,19 +73,23 @@ const CreateReel = () => {
     setIsLoading(true);
 
     try {
-      // Upload video
-      const fileExt = video.name.split('.').pop();
-      const fileName = `reels/${user.id}/${Date.now()}.${fileExt}`;
+      // Validate video
+      const validation = validateFile(video, {
+        maxSizeMB: 200,
+        allowedTypes: ['video/*']
+      });
       
-      const { error: uploadError } = await supabase.storage
-        .from('uploads')
-        .upload(fileName, video);
+      if (!validation.valid) {
+        throw new Error(validation.error || 'Invalid video');
+      }
+      
+      // Upload video
+      const filePath = generateFilePath(user.id, video.name, 'reels');
+      const { url: publicUrl, error: uploadError } = await uploadFile(video, filePath);
 
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('uploads')
-        .getPublicUrl(fileName);
+      if (uploadError || !publicUrl) {
+        throw uploadError || new Error('Failed to upload video');
+      }
 
       // Create reel
       const { error: reelError } = await supabase.from('reels').insert({

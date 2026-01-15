@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { uploadFile, generateFilePath, validateFile } from '@/lib/storage';
 
 const CreateStory = () => {
   const navigate = useNavigate();
@@ -30,26 +31,32 @@ const CreateStory = () => {
 
     setUploading(true);
 
+    // Validate image
+    const validation = validateFile(imageFile, {
+      maxSizeMB: 10,
+      allowedTypes: ['image/*']
+    });
+    
+    if (!validation.valid) {
+      toast({ title: validation.error || 'Invalid image', variant: 'destructive' });
+      setUploading(false);
+      return;
+    }
+
     // Upload image
-    const fileExt = imageFile.name.split('.').pop();
-    const filePath = `stories/${user.id}/${Date.now()}.${fileExt}`;
+    const filePath = generateFilePath(user.id, imageFile.name, 'stories');
+    const { url: imageUrl, error: uploadError } = await uploadFile(imageFile, filePath);
 
-    const { error: uploadError } = await supabase.storage
-      .from('uploads')
-      .upload(filePath, imageFile);
-
-    if (uploadError) {
+    if (uploadError || !imageUrl) {
       toast({ title: 'Failed to upload image', variant: 'destructive' });
       setUploading(false);
       return;
     }
 
-    const { data: urlData } = supabase.storage.from('uploads').getPublicUrl(filePath);
-
     // Create story
     const { error: storyError } = await supabase.from('stories').insert({
       user_id: user.id,
-      image_url: urlData.publicUrl,
+      image_url: imageUrl,
       caption: caption || null,
     });
 

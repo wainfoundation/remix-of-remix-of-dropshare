@@ -16,6 +16,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { uploadFile, generateFilePath, validateFile } from '@/lib/storage';
 
 const STORE_CATEGORIES = [
   'Fashion & Apparel',
@@ -77,21 +78,28 @@ const EditProfile = () => {
 
     // Upload avatar if changed
     if (avatarFile) {
-      const fileExt = avatarFile.name.split('.').pop();
-      const filePath = `avatars/${user.id}/${Date.now()}.${fileExt}`;
+      // Validate file
+      const validation = validateFile(avatarFile, {
+        maxSizeMB: 5,
+        allowedTypes: ['image/*']
+      });
+      
+      if (!validation.valid) {
+        toast({ title: validation.error || 'Invalid image', variant: 'destructive' });
+        setLoading(false);
+        return;
+      }
+      
+      const filePath = generateFilePath(user.id, avatarFile.name, 'avatars');
+      const { url, error: uploadError } = await uploadFile(avatarFile, filePath);
 
-      const { error: uploadError } = await supabase.storage
-        .from('uploads')
-        .upload(filePath, avatarFile);
-
-      if (uploadError) {
+      if (uploadError || !url) {
         toast({ title: 'Failed to upload avatar', variant: 'destructive' });
         setLoading(false);
         return;
       }
 
-      const { data: urlData } = supabase.storage.from('uploads').getPublicUrl(filePath);
-      newAvatarUrl = urlData.publicUrl;
+      newAvatarUrl = url;
     }
 
     // Check username uniqueness if changed

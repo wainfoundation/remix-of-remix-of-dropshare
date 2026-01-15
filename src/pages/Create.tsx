@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { uploadFile, generateFilePath, validateFile } from '@/lib/storage';
 import PostTypeSelector, { PostType } from '@/components/create/PostTypeSelector';
 
 interface MediaItem {
@@ -122,20 +123,25 @@ const Create = () => {
       // Upload first media as main image (if any)
       if (mediaItems.length > 0) {
         const firstMedia = mediaItems[0];
-        const fileExt = firstMedia.file.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
         
-        const { error: uploadError } = await supabase.storage
-          .from('uploads')
-          .upload(fileName, firstMedia.file);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('uploads')
-          .getPublicUrl(fileName);
+        // Validate file
+        const validation = validateFile(firstMedia.file, {
+          maxSizeMB: 100,
+          allowedTypes: ['image/*', 'video/*']
+        });
         
-        imageUrl = publicUrl;
+        if (!validation.valid) {
+          throw new Error(validation.error || 'Invalid file');
+        }
+        
+        const filePath = generateFilePath(user.id, firstMedia.file.name, 'posts');
+        const { url, error: uploadError } = await uploadFile(firstMedia.file, filePath);
+
+        if (uploadError || !url) {
+          throw uploadError || new Error('Failed to upload file');
+        }
+        
+        imageUrl = url;
       }
 
       // Create post
@@ -168,18 +174,11 @@ const Create = () => {
       if (mediaItems.length > 1) {
         for (let i = 1; i < mediaItems.length; i++) {
           const media = mediaItems[i];
-          const mediaExt = media.file.name.split('.').pop();
-          const mediaFileName = `${user.id}/${Date.now()}-${i}.${mediaExt}`;
           
-          const { error: mediaUploadError } = await supabase.storage
-            .from('uploads')
-            .upload(mediaFileName, media.file);
+          const filePath = generateFilePath(user.id, media.file.name, 'posts');
+          const { url: mediaUrl, error: mediaUploadError } = await uploadFile(media.file, filePath);
 
-          if (mediaUploadError) continue;
-
-          const { data: { publicUrl: mediaUrl } } = supabase.storage
-            .from('uploads')
-            .getPublicUrl(mediaFileName);
+          if (mediaUploadError || !mediaUrl) continue;
 
           await supabase.from('post_media').insert({
             post_id: post.id,
