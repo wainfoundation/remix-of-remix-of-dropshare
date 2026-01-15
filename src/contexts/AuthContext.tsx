@@ -71,10 +71,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (piAuthenticated === "true" && piUserId) {
         setAuthMethod('pi');
         const profileData = await fetchProfile(piUserId);
-        setProfile(profileData);
+        if (profileData) {
+          setProfile(profileData);
+          // Create a user object for compatibility
+          setUser({
+            id: piUserId,
+            email: `${piUserId}@pi.dropshare.app`,
+            aud: 'authenticated',
+            role: 'authenticated',
+            created_at: profileData.created_at,
+            updated_at: profileData.updated_at,
+          } as User);
+        }
       } else {
         setAuthMethod(null);
         setProfile(null);
+        setUser(null);
       }
       setLoading(false);
     };
@@ -148,7 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) return { error };
       } else {
         // Create new profile with signup details
-        const { error } = await supabase
+        const { data: newProfile, error } = await supabase
           .from('profiles')
           .insert({
             user_id: userId,
@@ -160,9 +172,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             bio: null,
             avatar_url: null,
             privacy: 'public',
-          });
+          })
+          .select()
+          .single();
 
-        if (error) return { error };
+        if (error) {
+          console.error('Error creating profile:', error);
+          return { error };
+        }
+
+        console.log('Profile created successfully:', newProfile);
       }
 
       setAuthMethod('pi');
@@ -171,9 +190,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("pi_authenticated", "true");
       localStorage.setItem("pi_supabase_user_id", userId);
 
-      // Refresh profile data
+      // Refresh profile data to ensure it's loaded
       const profileData = await fetchProfile(userId);
+      
+      if (!profileData) {
+        console.error('Profile not found after creation');
+        return { error: new Error('Profile creation failed') };
+      }
+
+      console.log('Setting profile and user state:', profileData);
       setProfile(profileData);
+      
+      // Set user object for authenticated state
+      setUser({
+        id: userId,
+        email: `${userId}@pi.dropshare.app`,
+        aud: 'authenticated',
+        role: 'authenticated',
+        created_at: profileData.created_at,
+        updated_at: profileData.updated_at,
+      } as User);
 
       return { error: null };
     } catch (error) {

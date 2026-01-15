@@ -57,13 +57,18 @@ const Profile = () => {
 
   useEffect(() => {
     if (username) {
-      const normalizedUsername = username.startsWith('@') ? username : `@${username}`;
+      // Normalize username: ensure it starts with @ and is lowercase
+      const normalizedUsername = username.startsWith('@') 
+        ? username.toLowerCase() 
+        : `@${username.toLowerCase()}`;
       fetchProfile(normalizedUsername);
     }
   }, [username, user]);
 
   const fetchProfile = async (normalizedUsername: string) => {
     setLoading(true);
+
+    console.log('Fetching profile for username:', normalizedUsername);
 
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
@@ -73,6 +78,7 @@ const Profile = () => {
 
     if (profileError || !profileData) {
       console.error('Error fetching profile:', profileError);
+      console.log('Username searched:', normalizedUsername);
       setLoading(false);
       return;
     }

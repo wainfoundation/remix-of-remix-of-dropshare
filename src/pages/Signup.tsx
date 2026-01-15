@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingLogo } from '@/components/ui/loading-logo';
 import { usePiAuth } from '@/hooks/use-pi-auth';
