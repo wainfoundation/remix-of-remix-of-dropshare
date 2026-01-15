@@ -11,5 +11,6 @@ alter table if exists public.saved_posts drop constraint if exists saved_posts_u
 alter table if exists public.stories drop constraint if exists stories_user_id_fkey;
 alter table if exists public.story_highlights drop constraint if exists story_highlights_user_id_fkey;
 alter table if exists public.profiles drop constraint if exists profiles_user_id_fkey;
+alter table if exists public.reel_comments drop constraint if exists reel_comments_user_id_fkey;
 
 -- Optional: ensure no check constraints block inserts (kept minimal here)
