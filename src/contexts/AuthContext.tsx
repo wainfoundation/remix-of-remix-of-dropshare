@@ -208,6 +208,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             username: finalUsername,
             display_name: displayName,
             account_type: accountType,
+            desired_account_type: accountType !== 'shopper' ? accountType : null,
             website_url: websiteUrl || null,
             store_category: storeCategory || null,
           })
@@ -223,6 +224,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             username: finalUsername,
             display_name: displayName,
             account_type: accountType,
+            desired_account_type: accountType !== 'shopper' ? accountType : null,
             website_url: websiteUrl || null,
             store_category: storeCategory || null,
             bio: null,
@@ -244,6 +246,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 username: regeneratedUsername,
                 display_name: displayName,
                 account_type: accountType,
+                desired_account_type: accountType !== 'shopper' ? accountType : null,
                 website_url: websiteUrl || null,
                 store_category: storeCategory || null,
                 bio: null,

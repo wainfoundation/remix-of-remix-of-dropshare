@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Store, ShoppingBag, Sparkles, ArrowLeft, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 type AccountType = 'business' | 'creator' | 'shopper';
 type SignupStep = 'select-type' | 'fill-details' | 'creating';
@@ -142,6 +143,39 @@ const Signup = () => {
     setStep("creating");
 
     try {
+      // Charge 10π for Business/Creator account types (Shopper is free)
+      if (selectedType === 'business' || selectedType === 'creator') {
+        const pricePi = 10;
+        await new Promise<void>((resolve, reject) => {
+          if (typeof window === 'undefined' || !window.Pi) {
+            return reject(new Error('Pi SDK not available. Please open this app in Pi Browser.'));
+          }
+          try {
+            window.Pi.createPayment(
+              {
+                amount: pricePi,
+                memo: `Create ${selectedType} account`,
+                metadata: { purpose: 'account_creation', type: selectedType, userId },
+              },
+              {
+                onReadyForServerApproval: () => {
+                  // In sandbox/no-backend mode we skip server approval
+                  console.log('Pi payment ready for approval (skipped)');
+                },
+                onReadyForServerCompletion: () => {
+                  console.log('Pi payment completed (sandbox accepted)');
+                  resolve();
+                },
+                onCancel: () => reject(new Error('Payment cancelled')),
+                onError: (e: any) => reject(e instanceof Error ? e : new Error('Payment failed')),
+              }
+            );
+          } catch (e) {
+            reject(e instanceof Error ? e : new Error('Unable to start payment'));
+          }
+        });
+      }
+
       const { error } = await signUpWithPi(
         userId,
         username,
@@ -153,6 +187,17 @@ const Signup = () => {
 
       if (error) {
         throw error;
+      }
+
+      // Record/activate subscription when paid tiers are selected
+      if (selectedType === 'business' || selectedType === 'creator') {
+        try {
+          await supabase.functions.invoke('record-payment', {
+            body: { userId, plan: 'monthly_10pi', accountType: selectedType },
+          });
+        } catch (e) {
+          console.warn('record-payment invocation failed (will rely on client features only):', e);
+        }
       }
 
       toast({
@@ -219,6 +264,9 @@ const Signup = () => {
             </div>
             <h1 className="text-4xl font-bold">DropShare</h1>
             <p className="text-muted-foreground">Create your account</p>
+            {selectedType && (selectedType === 'business' || selectedType === 'creator') && (
+              <p className="text-xs text-muted-foreground">Creating a {selectedType} account costs <span className="font-semibold">10 π</span></p>
+            )}
           </div>
 
           {/* Form */}
