@@ -32,15 +32,15 @@
   <script>
     // Initialize Pi SDK immediately as per Pi documentation
     if (window.Pi) {
-      // Check if we're in development (sandbox) or production
-      const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1') || window.location.hostname.includes('ngrok') || window.location.hostname.includes('localtunnel');
-      
+      // Force sandbox mode
+      const forceSandbox = true;
+
       window.Pi.init({ 
         version: "2.0", 
-        sandbox: isDevelopment 
+        sandbox: forceSandbox 
       });
       
-      console.log('Pi SDK initialized in', isDevelopment ? 'sandbox' : 'production', 'mode');
+      console.log('Pi SDK initialized | Sandbox:', forceSandbox);
     } else {
       console.warn('Pi SDK not available - ensure you are using Pi Browser');
     }

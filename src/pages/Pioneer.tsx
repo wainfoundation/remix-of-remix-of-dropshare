@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
 import { Search, UserPlus, UserCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import VerifiedBadge from '@/components/ui/VerifiedBadge';
 
 interface Profile {
   user_id: string;
@@ -209,6 +210,9 @@ const Pioneer = () => {
                           <p className="font-semibold truncate">
                             {profile.display_name}
                           </p>
+                          {profile.username.toLowerCase() === '@wain2020' && (
+                            <VerifiedBadge size="sm" />
+                          )}
                           {profile.account_type === 'business' && (
                             <span className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 px-2 py-0.5 rounded-full">
                               Business

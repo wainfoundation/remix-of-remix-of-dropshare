@@ -62,6 +62,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Recent accounts (stored in localStorage for quick sign-in)
+  const addRecentAccount = (p: Profile) => {
+    try {
+      const key = 'recent_accounts';
+      const existing = JSON.parse(localStorage.getItem(key) || '[]') as Array<any>;
+      const withoutDup = existing.filter((a) => a.user_id !== p.user_id);
+      const record = {
+        user_id: p.user_id,
+        username: p.username,
+        display_name: p.display_name,
+        avatar_url: p.avatar_url,
+        last_used: Date.now(),
+      };
+      const updated = [record, ...withoutDup].slice(0, 5);
+      localStorage.setItem(key, JSON.stringify(updated));
+    } catch (e) {
+      // Ignore persistence errors
+    }
+  };
+
   // Handle Pi authentication state only
   useEffect(() => {
     const checkPiAuth = async () => {
@@ -119,6 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Set up authentication state
       setAuthMethod('pi');
       setProfile(profileData);
+      addRecentAccount(profileData);
       
       // Store Pi auth state
       localStorage.setItem("pi_authenticated", "true");
@@ -267,6 +288,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       console.log('Setting profile and user state:', profileData);
       setProfile(profileData);
+      addRecentAccount(profileData);
       
       // Set user object for authenticated state
       setUser({
@@ -311,6 +333,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("pi_token_validated");
     localStorage.removeItem("pi_token_validation_time");
     
+    // Persist current account to recents before clearing
+    if (profile) {
+      addRecentAccount(profile);
+    }
     setUser(null);
     setSession(null);
     setProfile(null);

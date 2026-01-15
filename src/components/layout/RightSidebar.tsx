@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, Users, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import NotificationSettings from '@/components/NotificationSettings';
+import VerifiedBadge from '@/components/ui/VerifiedBadge';
 
 interface SuggestedUser {
   user_id: string;
@@ -178,12 +179,17 @@ const RightSidebar = ({ mobile = false }: RightSidebarProps) => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <button
-                    onClick={() => navigate(`/profile/${profile.username}`)}
-                    className="font-semibold text-sm hover:underline truncate block text-left"
-                  >
-                    {profile.display_name}
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => navigate(`/profile/${profile.username}`)}
+                      className="font-semibold text-sm hover:underline truncate text-left"
+                    >
+                      {profile.display_name}
+                    </button>
+                    {profile.username.toLowerCase() === '@wain2020' && (
+                      <VerifiedBadge size="sm" />
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground truncate">
                     {profile.username}
                   </p>

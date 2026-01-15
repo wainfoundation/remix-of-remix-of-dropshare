@@ -1,12 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { PiAuthComponent } from '@/components/auth/PiAuthComponent';
 import { AppLogo } from '@/components/AppLogo';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { usePiAuth } from '@/hooks/use-pi-auth';
 
 const Login = () => {
   const { profile, loading } = useAuth();
+  const { authenticate, isLoading: piLoading } = usePiAuth();
+  const [recent, setRecent] = useState<Array<any>>([]);
   const navigate = useNavigate();
 
   // Redirect if already logged in
@@ -15,6 +20,19 @@ const Login = () => {
       navigate('/');
     }
   }, [profile, loading, navigate]);
+
+  // Load recent accounts from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('recent_accounts');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setRecent(parsed);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -69,6 +87,47 @@ const Login = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Recent Accounts */}
+        {recent.length > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Recent accounts</CardTitle>
+              <CardDescription>Quickly sign in with a previously used account</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {recent.map((acc) => (
+                <div key={acc.user_id} className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={acc.avatar_url || ''} />
+                      <AvatarFallback>{acc.display_name?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold truncate">{acc.display_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{acc.username}</p>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    disabled={piLoading}
+                    onClick={async () => {
+                      try {
+                        const res = await authenticate(["username", "payments"]);
+                        if (!res.success) throw new Error('Authentication failed');
+                        navigate('/');
+                      } catch (e) {
+                        // Fall back to normal flow handled by PiAuthComponent
+                      }
+                    }}
+                  >
+                    Sign in
+                  </Button>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Info Section */}
         <div className="text-center space-y-4">
