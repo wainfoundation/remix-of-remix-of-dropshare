@@ -322,7 +322,7 @@ const Profile = () => {
             <div className="relative flex-shrink-0">
               {hasActiveStories ? (
                 <button
-                  onClick={() => navigate(`/stories/${profile.user_id}`)}
+                  onClick={() => navigate(`/story/${profile.username}`)}
                   className="relative block"
                 >
                   {/* Neon gradient ring for active stories */}

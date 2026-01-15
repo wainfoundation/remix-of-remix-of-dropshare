@@ -80,13 +80,14 @@ const StoryViewer = () => {
     setLoading(true);
 
     // Get user profile
-    const { data: profileData } = await supabase
+    const { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .select('user_id, username, display_name, avatar_url')
       .eq('username', username)
       .single();
 
-    if (!profileData) {
+    if (profileError || !profileData) {
+      console.error('Error fetching profile:', profileError);
       navigate('/');
       return;
     }
@@ -94,15 +95,20 @@ const StoryViewer = () => {
     setStoryUser(profileData);
 
     // Get active stories (within 24 hours)
-    const { data: storiesData } = await supabase
+    const { data: storiesData, error: storiesError } = await supabase
       .from('stories')
       .select('*')
       .eq('user_id', profileData.user_id)
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: true });
 
+    if (storiesError) {
+      console.error('Error fetching stories:', storiesError);
+    }
+
     if (!storiesData || storiesData.length === 0) {
-      navigate('/');
+      console.log('No active stories found for user:', username);
+      navigate(`/profile/${username}`);
       return;
     }
 

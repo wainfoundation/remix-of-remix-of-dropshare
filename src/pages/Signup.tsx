@@ -7,9 +7,17 @@ import { AppLogo } from '@/components/AppLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Store, ShoppingBag, Sparkles, ArrowLeft, Check } from 'lucide-react';
+import { Store, ShoppingBag, Sparkles, ArrowLeft, Check, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 type AccountType = 'business' | 'creator' | 'shopper';
 type SignupStep = 'select-type' | 'fill-details' | 'creating';
@@ -28,6 +36,7 @@ const Signup = () => {
   const [storeName, setStoreName] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPlanModal, setShowPlanModal] = useState(false);
 
   const userId = searchParams.get('userId');
 
@@ -62,18 +71,24 @@ const Signup = () => {
       icon: Store,
       title: 'Business',
       description: 'Share products with Pi pricing & links',
+      price: '10π',
+      features: ['Product listings with pricing', 'External store links', 'Business verification badge', 'Analytics dashboard'],
     },
     {
       type: 'creator' as AccountType,
       icon: Sparkles,
       title: 'Creator',
       description: 'Share content & grow your audience',
+      price: '10π',
+      features: ['Unlimited posts & reels', 'Content analytics', 'Verified creator badge', 'Audience insights'],
     },
     {
       type: 'shopper' as AccountType,
       icon: ShoppingBag,
       title: 'Shopper',
       description: 'Discover products & follow creators',
+      price: 'Free',
+      features: ['Follow creators & businesses', 'Save favorite products', 'Comment & engage', 'Personalized feed'],
     },
   ];
 
@@ -378,9 +393,63 @@ const Signup = () => {
             </p>
           </div>
 
+          {/* Plan Info Section */}
+          <div className="rounded-lg border border-border bg-secondary/30 p-4 space-y-2">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <h3 className="font-semibold text-sm">Choose Your Account Type</h3>
+                <p className="text-xs text-muted-foreground">
+                  Business & Creator accounts require a 10π monthly subscription.
+                  Shopper accounts are completely free.
+                </p>
+              </div>
+              <Dialog open={showPlanModal} onOpenChange={setShowPlanModal}>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Account Plans</DialogTitle>
+                    <DialogDescription>
+                      Choose the plan that best fits your needs
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    {accountTypes.map(({ type, icon: Icon, title, price, features }) => (
+                      <div key={type} className="space-y-2">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
+                            <Icon className="h-5 w-5" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold">{title}</h4>
+                            <p className="text-sm text-primary font-semibold">{price}{price !== 'Free' && '/month'}</p>
+                          </div>
+                        </div>
+                        <ul className="ml-13 space-y-1 text-xs text-muted-foreground">
+                          {features.map((feature, idx) => (
+                            <li key={idx} className="flex items-start gap-2">
+                              <Check className="h-3 w-3 mt-0.5 text-primary flex-shrink-0" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                    <p className="text-xs text-muted-foreground pt-2 border-t">
+                      💡 Your subscription auto-renews monthly. Downgrade to Shopper anytime for free.
+                    </p>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
+
           {/* Account Type Selection */}
           <div className="space-y-3">
-            {accountTypes.map(({ type, icon: Icon, title, description }) => (
+            {accountTypes.map(({ type, icon: Icon, title, description, price }) => (
               <button
                 key={type}
                 onClick={() => handleTypeSelect(type)}
@@ -396,7 +465,14 @@ const Signup = () => {
                   <Icon className="h-6 w-6" />
                 </div>
                 <div className="flex-1 text-left">
-                  <span className="font-semibold">{title}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">{title}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      price === 'Free' ? 'bg-green-500/10 text-green-600' : 'bg-primary/10 text-primary'
+                    }`}>
+                      {price}{price !== 'Free' && '/mo'}
+                    </span>
+                  </div>
                   <p className="text-sm text-muted-foreground">{description}</p>
                 </div>
                 {selectedType === type && (
