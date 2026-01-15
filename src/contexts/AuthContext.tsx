@@ -130,11 +130,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setAuthMethod('pi');
       
+      // Ensure username starts with '@'
+      const formattedUsername = username.startsWith('@') ? username : `@${username}`;
+
       // Update profile with additional details
       const { error } = await supabase
         .from('profiles')
         .update({
-          username: username.toLowerCase(),
+          username: formattedUsername.toLowerCase(),
           display_name: displayName,
           account_type: accountType,
           website_url: websiteUrl || null,

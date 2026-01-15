@@ -85,6 +85,7 @@ export function PiAuthComponent() {
           console.log('New user detected. Redirecting to sign-up page.');
           navigate(`/signup?userId=${result.userId}`);
         } else {
+          console.log('Existing user detected. Signing in.');
           await signInWithPi(result.userId!);
           navigate('/');
         }

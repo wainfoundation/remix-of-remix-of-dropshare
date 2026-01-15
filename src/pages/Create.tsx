@@ -207,7 +207,10 @@ const Create = () => {
     setIsLoading(false);
   };
 
+  console.log('User state in Create page:', user);
+
   if (!user) {
+    console.log('User is not logged in. Redirecting to login page.');
     return (
       <MainLayout>
         <div className="flex flex-col items-center justify-center py-16 px-4 text-center">

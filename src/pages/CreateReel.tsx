@@ -117,7 +117,10 @@ const CreateReel = () => {
 
   const canCreate = true; // Allow all logged-in users to create reels
 
+  console.log('User state in CreateReel page:', user);
+
   if (!user) {
+    console.log('User is not logged in. Redirecting to login page.');
     return (
       <MainLayout>
         <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
