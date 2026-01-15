@@ -137,7 +137,13 @@ const EditProfile = () => {
   if (!user || !profile) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <p>Please log in to edit your profile.</p>
+        <div className="flex flex-col items-center justify-center text-center">
+          <h2 className="text-xl font-semibold">Sign in to edit profile</h2>
+          <p className="mt-2 text-muted-foreground mb-6">
+            You need to be logged in to edit your profile.
+          </p>
+          <Button onClick={() => navigate('/login')}>Log In</Button>
+        </div>
       </div>
     );
   }

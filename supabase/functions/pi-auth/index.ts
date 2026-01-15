@@ -136,18 +136,13 @@ serve(async (req) => {
 
       userId = created.user.id;
 
-      // Create profile (best effort)
-      const { error: createProfileError } = await supabase.from("profiles").insert({
-        user_id: userId,
-        username: normalizedUsername,
-        display_name: piUserData.username || `Pioneer ${piUserData.uid.slice(0, 8)}`,
-        account_type: "shopper",
-        bio: "Pi Network Pioneer",
-      });
-
-      if (createProfileError) {
-        console.error("Error creating profile:", createProfileError);
-      }
+      // NOTE: Do NOT auto-create profile here
+      // User must complete signup form with their details
+      // Profile will be created in signUpWithPi after user provides details
+      console.log("New user created. User must complete signup to create profile.");
+      console.log("User ID:", userId);
+      console.log("Pi UID:", piUserData.uid);
+      console.log("Pi Username:", piUserData.username);
     }
 
     return new Response(

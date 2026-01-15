@@ -81,14 +81,10 @@ export function PiAuthComponent() {
       if (result.success) {
         console.log('Pi authentication successful:', result);
 
-        if (result.isNewUser) {
-          console.log('New user detected. Redirecting to sign-up page.');
-          navigate(`/signup?userId=${result.userId}`);
-        } else {
-          console.log('Existing user detected. Signing in.');
-          await signInWithPi(result.userId!);
-          navigate('/');
-        }
+        // For now, all users go to signup to complete their profile
+        // This ensures we collect all necessary details before creating the account
+        console.log('Redirecting user to signup for profile completion.');
+        navigate(`/signup?userId=${result.userId}`);
       } else {
         console.error('Pi authentication failed:', result);
         toast({

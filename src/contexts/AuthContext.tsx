@@ -85,14 +85,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // PI AUTHENTICATION METHODS ONLY
   const signInWithPi = async (userId: string) => {
     try {
-      // Check if user exists and get their profile
+      // Store the user ID for later use
+      localStorage.setItem("pi_supabase_user_id", userId);
+      
+      // Check if user has a complete profile
       const profileData = await fetchProfile(userId);
       
+      // New user: No profile exists - they need to complete signup
       if (!profileData) {
-        console.error('No profile found for user:', userId);
-        return { error: new Error('User profile not found') };
+        console.log('New user detected. No profile found. User must complete signup.');
+        localStorage.setItem("pi_authenticated", "false");
+        setAuthMethod('pi');
+        setProfile(null);
+        return { error: null, isNewUser: true };
       }
 
+      // Returning user: Profile exists - sign them in
       console.log('Setting up Pi authentication for user:', userId, profileData.username);
       
       // Set up authentication state
@@ -102,17 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Store Pi auth state
       localStorage.setItem("pi_authenticated", "true");
       
-      // Determine if user is new based on profile completeness
-      const isNewUser = !profileData.username || profileData.username.startsWith('Pioneer') || !profileData.display_name;
-      
-      console.log('User status determined:', {
-        isNewUser,
-        hasUsername: !!profileData.username,
-        hasDisplayName: !!profileData.display_name,
-        username: profileData.username
-      });
-      
-      return { error: null, isNewUser };
+      return { error: null, isNewUser: false };
     } catch (error) {
       console.error('signInWithPi error:', error);
       return { error: error as Error };
@@ -128,27 +126,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     storeCategory?: string
   ) => {
     try {
-      setAuthMethod('pi');
-      
       // Ensure username starts with '@'
       const formattedUsername = username.startsWith('@') ? username : `@${username}`;
 
-      // Update profile with additional details
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          username: formattedUsername.toLowerCase(),
-          display_name: displayName,
-          account_type: accountType,
-          website_url: websiteUrl || null,
-          store_category: storeCategory || null,
-        })
-        .eq('user_id', userId);
+      // Check if profile already exists
+      const existingProfile = await fetchProfile(userId);
+      
+      if (existingProfile) {
+        // Update existing profile
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            username: formattedUsername.toLowerCase(),
+            display_name: displayName,
+            account_type: accountType,
+            website_url: websiteUrl || null,
+            store_category: storeCategory || null,
+          })
+          .eq('user_id', userId);
 
-      if (error) return { error };
+        if (error) return { error };
+      } else {
+        // Create new profile with signup details
+        const { error } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: userId,
+            username: formattedUsername.toLowerCase(),
+            display_name: displayName,
+            account_type: accountType,
+            website_url: websiteUrl || null,
+            store_category: storeCategory || null,
+            bio: null,
+            avatar_url: null,
+            privacy: 'public',
+          });
 
+        if (error) return { error };
+      }
+
+      setAuthMethod('pi');
+      
       // Store Pi auth state
       localStorage.setItem("pi_authenticated", "true");
+      localStorage.setItem("pi_supabase_user_id", userId);
 
       // Refresh profile data
       const profileData = await fetchProfile(userId);

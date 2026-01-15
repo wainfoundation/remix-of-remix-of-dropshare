@@ -1,34 +1,34 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingLogo } from '@/components/ui/loading-logo';
 import { usePiAuth } from '@/hooks/use-pi-auth';
-import { isPiSdkInitialized } from '@/integrations/pi/init';
 import { AppLogo } from '@/components/AppLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Store, ShoppingBag, Sparkles, ArrowLeft, Check } from 'lucide-react';
+import { Store, ShoppingBag, Sparkles, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 type AccountType = 'business' | 'creator' | 'shopper';
-type SignupStep = 'authenticate-first' | 'select-type' | 'fill-details' | 'authenticating';
+type SignupStep = 'select-type' | 'fill-details' | 'creating';
 
 const Signup = () => {
   const { profile, loading, signUpWithPi } = useAuth();
-  const { isAuthenticated, user: piUser, authenticate, isLoading: piLoading } = usePiAuth();
+  const { isAuthenticated, user: piUser, isLoading: piLoading } = usePiAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
 
-  const [step, setStep] = useState<SignupStep>('authenticate-first');
+  const [step, setStep] = useState<SignupStep>('select-type');
   const [selectedType, setSelectedType] = useState<AccountType | null>(null);
   const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [storeName, setStoreName] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
-  const [sdkReady, setSdkReady] = useState(false);
-  const [sdkError, setSdkError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const userId = searchParams.get('userId');
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -37,34 +37,19 @@ const Signup = () => {
     }
   }, [profile, loading, navigate]);
 
-  // Initialize Pi SDK check (should be initialized in HTML per Pi docs)
+  // Ensure we have a userId from Pi auth
   useEffect(() => {
-    const checkSdk = () => {
-      try {
-        if (isPiSdkInitialized()) {
-          setSdkReady(true);
-          setSdkError(null);
-        } else {
-          setSdkError("Please open this app in Pi Browser");
-        }
-      } catch (err) {
-        console.error("Pi SDK check failed:", err);
-        setSdkError("Please open this app in Pi Browser");
-      }
-    };
-
-    // Check immediately
-    checkSdk();
-
-    // Also check after a short delay in case SDK is still loading
-    const timeout = setTimeout(checkSdk, 1000);
-    return () => clearTimeout(timeout);
-  }, []);
+    if (!userId) {
+      console.error('No userId provided. User must authenticate first.');
+      navigate('/login');
+    }
+  }, [userId, navigate]);
 
   // Pre-fill username from Pi auth when we have the user
   useEffect(() => {
     if (piUser?.username && !username) {
-      setUsername(piUser.username);
+      const cleanUsername = piUser.username.toLowerCase().replace(/^@/, '');
+      setUsername(cleanUsername);
       setDisplayName(piUser.username);
     }
   }, [piUser, username]);
@@ -107,33 +92,11 @@ const Signup = () => {
     }
   };
 
-  const getOrCreatePiUserId = async (): Promise<{ userId: string; username?: string }> => {
-    const existingUserId = localStorage.getItem("pi_supabase_user_id");
-    const existingUsername = localStorage.getItem("pi_username") || undefined;
-
-    if (existingUserId) {
-      return { userId: existingUserId, username: existingUsername };
-    }
-
-    const authResult = await authenticate(["username", "payments"]);
-
-    if (!authResult.success || !authResult.userId) {
-      throw new Error("Pi authentication failed. Please try again.");
-    }
-
-    return {
-      userId: authResult.userId,
-      username: localStorage.getItem("pi_username") || undefined,
-    };
-  };
-
   const handleCompleteSignup = async () => {
-    setSdkError(null);
-
-    if (!sdkReady) {
+    if (!userId) {
       toast({
-        title: "Pi Browser required",
-        description: "Please open this app in Pi Browser to continue.",
+        title: "Error",
+        description: "Missing user ID. Please sign in again.",
         variant: "destructive",
       });
       return;
@@ -157,6 +120,15 @@ const Signup = () => {
       return;
     }
 
+    if (!username.trim()) {
+      toast({
+        title: "Username required",
+        description: "Please enter a username to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (selectedType === "business" && !storeName.trim()) {
       toast({
         title: "Store name required",
@@ -167,19 +139,12 @@ const Signup = () => {
     }
 
     setIsSubmitting(true);
-    setStep("authenticating");
+    setStep("creating");
 
     try {
-      const { userId, username: storedUsername } = await getOrCreatePiUserId();
-      const finalUsername = (piUser?.username || storedUsername || username || "").toLowerCase();
-
-      if (!finalUsername) {
-        throw new Error("Missing Pi username. Please try signing in again.");
-      }
-
       const { error } = await signUpWithPi(
         userId,
-        finalUsername,
+        username,
         displayName,
         selectedType,
         websiteUrl || undefined,
@@ -210,20 +175,6 @@ const Signup = () => {
     }
   };
 
-  const handleAuthenticate = async () => {
-    try {
-      const authResult = await authenticate(["username", "payments"]);
-      if (authResult.success) {
-        setStep('select-type');
-      } else {
-        toast({ title: 'Authentication failed. Please try again.', variant: 'destructive' });
-      }
-    } catch (error) {
-      console.error('Authentication failed:', error);
-      toast({ title: 'Authentication failed. Please try again.', variant: 'destructive' });
-    }
-  };
-
   if (loading) {
     return <LoadingLogo />;
   }
@@ -241,8 +192,8 @@ const Signup = () => {
     );
   }
 
-  // Step 3: Authenticating
-  if (step === 'authenticating') {
+  // Step 2: Creating account
+  if (step === 'creating') {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-4">
         <div className="w-full max-w-sm space-y-6 text-center">
@@ -414,17 +365,10 @@ const Signup = () => {
           {/* Continue Button */}
           <Button
             onClick={handleContinue}
-            disabled={!selectedType || !sdkReady}
+            disabled={!selectedType}
             className="w-full h-12 text-base font-semibold"
           >
-            {!sdkReady ? (
-              <>
-                <LoadingLogo size="sm" className="mr-2" />
-                Initializing...
-              </>
-            ) : (
-              'Continue'
-            )}
+            Continue to Complete Profile
           </Button>
 
           {sdkError && (
