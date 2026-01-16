@@ -5,10 +5,10 @@
   "installCommand": "npm install",
   "devCommand": "npm run dev",
   "env": {
-    "VITE_SUPABASE_URL": "https://vjkpkqajjohqisfzkxvp.supabase.co",
-    "VITE_SUPABASE_PUBLISHABLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqa3BrcWFqam9ocWlzZnpreHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0Mzc5NTgsImV4cCI6MjA4NDAxMzk1OH0.H8tzoj9fzEq9t5XDo1hGwuTY8CMDDE7_tawdGS0XIS0",
-    "VITE_SUPABASE_PROJECT_ID": "vjkpkqajjohqisfzkxvp",
-    "PI_API_KEY": "ihhnkasxaeldd4qvjpo8d7b5kckuppgaoudoyugfvfa2joc0ardel82qrkzgqrlu"
+    "VITE_SUPABASE_URL": "https://zgbzubmazzxjylgdpdqi.supabase.co",
+    "VITE_SUPABASE_PUBLISHABLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnYnp1Ym1henp4anlsZ2RwZHFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0NzE2MjgsImV4cCI6MjA4NDA0NzYyOH0.nIHEgvgtcXVv-dJydrkW_B3GcnTZfMaUJM3ZHUiVMEI",
+    "VITE_SUPABASE_PROJECT_ID": "zgbzubmazzxjylgdpdqi",
+    "PI_API_KEY": "2yvymas2njxzgemeilxs9z5fjbivxkfw0wbwfnqcgwzipjqakuykqyjc9djfeawr"
   },
   "rewrites": [
     {
