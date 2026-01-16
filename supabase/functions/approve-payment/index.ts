@@ -1,3 +1,4 @@
+/// <reference path="../types.d.ts" />
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -8,7 +9,7 @@ const corsHeaders = {
 // Pi Network API base URL
 const PI_API_URL = "https://api.minepi.com";
 
-serve(async (req) => {
+serve(async (req: Request) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -83,11 +84,12 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error("Approve payment error:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Approve payment error:", message);
     return new Response(
       JSON.stringify({ 
         error: "Internal server error", 
-        details: error.message 
+        details: message 
       }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

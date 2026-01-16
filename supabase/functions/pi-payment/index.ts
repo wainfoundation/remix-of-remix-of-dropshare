@@ -1,3 +1,4 @@
+/// <reference path="../types.d.ts" />
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -9,7 +10,7 @@ const corsHeaders = {
 // Pi Network API base URL
 const PI_API_URL = "https://api.minepi.com";
 
-serve(async (req) => {
+serve(async (req: Request) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -37,7 +38,7 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "https://vjkpkqajjohqisfzkxvp.supabase.co";
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     
-    let supabase = null;
+    let supabase: any = null;
     if (supabaseServiceKey) {
       supabase = createClient(supabaseUrl, supabaseServiceKey);
     }
