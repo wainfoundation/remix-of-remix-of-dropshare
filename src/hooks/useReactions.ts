@@ -41,14 +41,20 @@ export const useReactions = (postId: string, userId: string | undefined) => {
       
       console.log('Fetching reactions for post:', postId);
       
-      // Use direct query to avoid TypeScript errors while table types aren't updated
-      const { data, error: fetchError } = await supabase
-        .from('post_reactions' as any)
-        .select('reaction_type, user_id')
-        .eq('post_id', postId);
+      // Use fetch API directly to bypass TypeScript issues with dynamic table names
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      
+      const url = `${supabaseUrl}/rest/v1/post_reactions?post_id=eq.${postId}&select=reaction_type,user_id`;
+      const fetchResponse = await fetch(url, {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+        },
+      });
 
-      if (fetchError) {
-        console.error('Supabase error:', fetchError);
+      if (!fetchResponse.ok) {
+        console.error('Fetch error:', fetchResponse.status);
         // Don't throw on fetch error, just set empty state
         setReactions({
           '👍': 0,
@@ -62,7 +68,10 @@ export const useReactions = (postId: string, userId: string | undefined) => {
         return;
       }
 
-      console.log('Fetched reactions:', data);
+      // Data is typed correctly
+      const reactionsData: Array<{ reaction_type: string; user_id: string }> = await fetchResponse.json();
+
+      console.log('Fetched reactions:', reactionsData);
 
       // Count reactions
       const counts: ReactionCount = {
@@ -76,7 +85,7 @@ export const useReactions = (postId: string, userId: string | undefined) => {
 
       let currentUserReaction: ReactionType | null = null;
 
-      data?.forEach((reaction) => {
+      reactionsData.forEach((reaction) => {
         const reactionType = reaction.reaction_type as ReactionType;
         if (REACTIONS.includes(reactionType)) {
           counts[reactionType]++;
@@ -109,17 +118,23 @@ export const useReactions = (postId: string, userId: string | undefined) => {
       setError(null);
       console.log('Adding reaction:', reaction, 'to post:', postId, 'by user:', userId);
 
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      
       // Remove previous reaction if exists
       if (userReaction) {
         console.log('Removing previous reaction:', userReaction);
-        const { error: deleteError } = await supabase
-          .from('post_reactions' as any)
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', userId);
+        const deleteUrl = `${supabaseUrl}/rest/v1/post_reactions?post_id=eq.${postId}&user_id=eq.${userId}`;
+        const deleteResponse = await fetch(deleteUrl, {
+          method: 'DELETE',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+          },
+        });
 
-        if (deleteError) {
-          console.error('Error deleting reaction:', deleteError);
+        if (!deleteResponse.ok) {
+          console.error('Error deleting reaction:', deleteResponse.status);
         }
 
         // Update local state immediately
@@ -136,16 +151,24 @@ export const useReactions = (postId: string, userId: string | undefined) => {
       }
 
       // Add new reaction
-      const { error: insertError } = await supabase
-        .from('post_reactions' as any)
-        .insert({
+      const insertUrl = `${supabaseUrl}/rest/v1/post_reactions`;
+      const insertResponse = await fetch(insertUrl, {
+        method: 'POST',
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+        },
+        body: JSON.stringify({
           post_id: postId,
           user_id: userId,
           reaction_type: reaction,
-        });
+        }),
+      });
 
-      if (insertError) {
-        console.error('Error inserting reaction:', insertError);
+      if (!insertResponse.ok) {
+        console.error('Error inserting reaction:', insertResponse.status);
         // Continue anyway for demo purposes
       }
 

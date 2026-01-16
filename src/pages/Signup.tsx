@@ -40,16 +40,35 @@ const Signup = () => {
 
   const userId = searchParams.get('userId');
 
-  // Redirect if already authenticated
+  // Redirect if already authenticated with a profile
   useEffect(() => {
     if (!loading && profile) {
       navigate('/');
     }
   }, [profile, loading, navigate]);
 
-  // Ensure we have a userId from Pi auth
+  // Check if user already exists and redirect to login with message
   useEffect(() => {
-    if (!userId) {
+    const checkExistingUser = async () => {
+      if (userId) {
+        // Check if profile already exists for this user
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('user_id', userId)
+          .maybeSingle();
+        
+        if (existingProfile) {
+          // User already has profile - sign them in instead
+          console.log('User already has profile, redirecting to login');
+          navigate('/login');
+        }
+      }
+    };
+    
+    if (userId) {
+      checkExistingUser();
+    } else {
       console.error('No userId provided. User must authenticate first.');
       navigate('/login');
     }
