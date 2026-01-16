@@ -1,6 +1,6 @@
 # Monthly 10π Subscription
 
-This adds a 10π monthly subscription for Business/Creator accounts:
+This adds a 20π monthly subscription for Business/Creator accounts:
 
 - Paid tiers: `business`, `creator`
 - Free tier: `shopper`
@@ -14,14 +14,14 @@ Run the migration in `supabase/migrations/20260115_add_subscription_fields.sql`.
 Added columns on `public.profiles`:
 - `desired_account_type text` — user’s chosen tier (business/creator)
 - `subscription_status text` — one of none/active/expired/canceled
-- `subscription_plan text` — e.g. `monthly_10pi`
+- `subscription_plan text` — e.g. `monthly_20pi`
 - `subscription_expires_at timestamptz`
 - `last_payment_at timestamptz`
 
 ## Edge Functions
 
 1) `record-payment` (HTTP)
-- Activates/renews `monthly_10pi`, extends `subscription_expires_at` by 30 days
+- Activates/renews `monthly_20pi`, extends `subscription_expires_at` by 30 days
 - Restores `account_type` to `desired_account_type` (or provided `accountType`)
 
 2) `subscription-sweeper` (Scheduled)
@@ -41,7 +41,7 @@ Added columns on `public.profiles`:
 
 ## Frontend Wiring
 
-- Signup charges 10π for Business/Creator, then calls `record-payment` to set expiry and status.
+- Signup charges 20π for Business/Creator, then calls `record-payment` to set expiry and status.
 - Settings account-type changes now require 10π when switching to Business/Creator and call `record-payment`; switching to Shopper is free and clears subscription fields.
 - Existing UI continues to read `profiles.account_type` as the effective tier.
 - `desired_account_type` is set during signup for paid tiers to support seamless renewal.

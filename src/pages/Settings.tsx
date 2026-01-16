@@ -61,7 +61,7 @@ const Settings = () => {
   const [isPrivate, setIsPrivate] = useState(profile?.privacy === 'private');
 
   const requestPiPayment = async (type: AccountType) => {
-    const pricePi = 10;
+    const pricePi = 20;
     await new Promise<void>((resolve, reject) => {
       if (typeof window === 'undefined' || !window.Pi) {
         return reject(new Error('Pi SDK not available. Please open this app in Pi Browser.'));
@@ -134,13 +134,13 @@ const Settings = () => {
       type: 'business' as AccountType,
       icon: Store,
       title: 'Business',
-      description: 'Share products with Pi pricing & links • 10π/mo',
+      description: 'Share products with Pi pricing & links • 20π/mo',
     },
     {
       type: 'creator' as AccountType,
       icon: Sparkles,
       title: 'Creator',
-      description: 'Share content & grow your audience • 10π/mo',
+      description: 'Share content & grow your audience • 20π/mo',
     },
     {
       type: 'shopper' as AccountType,
@@ -162,7 +162,7 @@ const Settings = () => {
         await requestPiPayment(newType);
 
         const { error: fnError } = await supabase.functions.invoke('record-payment', {
-          body: { userId: user.id, plan: 'monthly_10pi', accountType: newType },
+          body: { userId: user.id, plan: 'monthly_20pi', accountType: newType },
         });
 
         if (fnError) {
@@ -174,7 +174,7 @@ const Settings = () => {
             account_type: newType,
             desired_account_type: newType,
             subscription_status: 'active',
-            subscription_plan: 'monthly_10pi',
+            subscription_plan: 'monthly_20pi',
             subscription_expires_at: newExpiry.toISOString(),
             last_payment_at: now.toISOString(),
           };

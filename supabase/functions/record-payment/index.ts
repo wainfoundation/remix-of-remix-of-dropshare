@@ -17,7 +17,7 @@ serve(async (req) => {
     }
 
     // Only one plan for now
-    const planId = plan || "monthly_10pi";
+    const planId = plan || "monthly_20pi";
     const validTypes = ["business", "creator", "shopper"]; // shopper allowed but no-op
     if (accountType && !validTypes.includes(accountType)) {
       return new Response(JSON.stringify({ success: false, error: "Invalid accountType" }), { status: 400 });

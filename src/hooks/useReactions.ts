@@ -41,8 +41,9 @@ export const useReactions = (postId: string, userId: string | undefined) => {
       
       console.log('Fetching reactions for post:', postId);
       
+      // Use direct query to avoid TypeScript errors while table types aren't updated
       const { data, error: fetchError } = await supabase
-        .from('post_reactions')
+        .from('post_reactions' as any)
         .select('reaction_type, user_id')
         .eq('post_id', postId);
 
@@ -112,7 +113,7 @@ export const useReactions = (postId: string, userId: string | undefined) => {
       if (userReaction) {
         console.log('Removing previous reaction:', userReaction);
         const { error: deleteError } = await supabase
-          .from('post_reactions')
+          .from('post_reactions' as any)
           .delete()
           .eq('post_id', postId)
           .eq('user_id', userId);
@@ -136,7 +137,7 @@ export const useReactions = (postId: string, userId: string | undefined) => {
 
       // Add new reaction
       const { error: insertError } = await supabase
-        .from('post_reactions')
+        .from('post_reactions' as any)
         .insert({
           post_id: postId,
           user_id: userId,

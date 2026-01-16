@@ -217,7 +217,7 @@ const Signup = () => {
       if (selectedType === 'business' || selectedType === 'creator') {
         try {
           await supabase.functions.invoke('record-payment', {
-            body: { userId, plan: 'monthly_10pi', accountType: selectedType },
+            body: { userId, plan: 'monthly_20pi', accountType: selectedType },
           });
         } catch (e) {
           console.warn('record-payment invocation failed (will rely on client features only):', e);
