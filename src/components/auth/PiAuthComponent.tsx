@@ -78,13 +78,38 @@ export function PiAuthComponent() {
       // Authenticate with Pi Network following official documentation
       const result = await piAuthenticate(["username", "payments"]);
 
-      if (result.success) {
+      if (result.success && result.userId) {
         console.log('Pi authentication successful:', result);
 
-        // For now, all users go to signup to complete their profile
-        // This ensures we collect all necessary details before creating the account
-        console.log('Redirecting user to signup for profile completion.');
-        navigate(`/signup?userId=${result.userId}`);
+        // Try to sign in with Pi - this checks if user already has a profile
+        const signInResult = await signInWithPi(result.userId);
+        
+        if (signInResult.error) {
+          console.error('Sign in error:', signInResult.error);
+          toast({
+            title: 'Sign In Error',
+            description: signInResult.error.message || 'Unable to sign in. Please try again.',
+            variant: 'destructive',
+          });
+          return;
+        }
+        
+        // Check if user is new (no profile yet) or existing
+        const isNewUser = (signInResult as any).isNewUser;
+        
+        if (isNewUser) {
+          // New user - redirect to signup to complete profile
+          console.log('New user detected. Redirecting to signup for profile completion.');
+          navigate(`/signup?userId=${result.userId}`);
+        } else {
+          // Existing user - redirect to home
+          console.log('Existing user signed in successfully.');
+          toast({
+            title: 'Welcome back!',
+            description: 'You have been signed in successfully.',
+          });
+          navigate('/');
+        }
       } else {
         console.error('Pi authentication failed:', result);
         toast({

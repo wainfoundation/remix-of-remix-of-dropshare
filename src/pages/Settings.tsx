@@ -223,8 +223,8 @@ const Settings = () => {
     const newPrivacy = isPrivate ? 'public' : 'private';
     setIsUpdating(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
+      const { error } = await (supabase
+        .from('profiles') as any)
         .update({ privacy: newPrivacy })
         .eq('user_id', user.id);
 

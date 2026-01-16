@@ -124,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // PI AUTHENTICATION METHODS ONLY
-  const signInWithPi = async (userId: string) => {
+  const signInWithPi = async (userId: string): Promise<{ error: Error | null; isNewUser?: boolean }> => {
     try {
       // Store the user ID for later use
       localStorage.setItem("pi_supabase_user_id", userId);
@@ -147,6 +147,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Set up authentication state
       setAuthMethod('pi');
       setProfile(profileData);
+      setUser({
+        id: userId,
+        email: `${userId}@pi.dropshare.app`,
+        aud: 'authenticated',
+        role: 'authenticated',
+        created_at: profileData.created_at,
+        updated_at: profileData.updated_at,
+      } as User);
       addRecentAccount(profileData);
       
       // Store Pi auth state
