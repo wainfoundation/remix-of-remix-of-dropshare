@@ -7,8 +7,10 @@
   "env": {
     "VITE_SUPABASE_URL": "https://vjkpkqajjohqisfzkxvp.supabase.co",
     "VITE_SUPABASE_PUBLISHABLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqa3BrcWFqam9ocWlzZnpreHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0Mzc5NTgsImV4cCI6MjA4NDAxMzk1OH0.H8tzoj9fzEq9t5XDo1hGwuTY8CMDDE7_tawdGS0XIS0",
+    "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqa3BrcWFqam9ocWlzZnpreHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0Mzc5NTgsImV4cCI6MjA4NDAxMzk1OH0.H8tzoj9fzEq9t5XDo1hGwuTY8CMDDE7_tawdGS0XIS0",
     "VITE_SUPABASE_PROJECT_ID": "vjkpkqajjohqisfzkxvp",
-    "PI_API_KEY": "2yvymas2njxzgemeilxs9z5fjbivxkfw0wbwfnqcgwzipjqakuykqyjc9djfeawr"
+    "PI_API_KEY": "2yvymas2njxzgemeilxs9z5fjbivxkfw0wbwfnqcgwzipjqakuykqyjc9djfeawr",
+    "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqa3BrcWFqam9ocWlzZnpreHZwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODQzNzk1OCwiZXhwIjoyMDg0MDEzOTU4fQ.Z6EaPG_SW_goXmeWeq-flH7FzMTWbmHW_T2LhZ9VCHg"
   },
   "rewrites": [
     {
