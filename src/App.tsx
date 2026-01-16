@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { initPiSdk } from "@/integrations/pi";
 import LoadingOverlay from "@/components/ui/loading-overlay";
+import { TestReactions } from "@/components/TestReactions";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -108,6 +109,7 @@ const AppContent = () => {
           <Route path="/reels" element={<Reels />} />
           <Route path="/reels/:reelId" element={<Reels />} />
           <Route path="/create-reel" element={<CreateReel />} />
+          <Route path="/test-reactions" element={<TestReactions />} />
           <Route path="/videos" element={<VideoFeed />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/saved" element={<Saved />} />
