@@ -146,9 +146,9 @@ const RightSidebar = ({ mobile = false }: RightSidebarProps) => {
       {user && <NotificationSettings />}
       
       {/* Who to Follow */}
-      <Card>
+      <Card className="glass-card border-white/10">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
+          <CardTitle className="text-base flex items-center gap-2 text-white">
             <Users className="h-4 w-4" />
             Who to Follow
           </CardTitle>
@@ -220,9 +220,9 @@ const RightSidebar = ({ mobile = false }: RightSidebarProps) => {
       </Card>
 
       {/* Trending Topics */}
-      <Card>
+      <Card className="glass-card border-white/10">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
+          <CardTitle className="text-base flex items-center gap-2 text-white">
             <TrendingUp className="h-4 w-4" />
             Trending
           </CardTitle>
@@ -233,10 +233,10 @@ const RightSidebar = ({ mobile = false }: RightSidebarProps) => {
               <button
                 key={hashtag.id}
                 onClick={() => navigate('/trending')}
-                className="text-sm w-full text-left hover:bg-muted/50 p-2 rounded-md transition-colors"
+                className="text-sm w-full text-left glass-subtle hover:glass p-2 rounded-md transition-all"
               >
-                <p className="font-semibold">#{hashtag.tag}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="font-semibold text-white">#{hashtag.tag}</p>
+                <p className="text-xs text-white/70">
                   {hashtag.post_count.toLocaleString()} posts
                 </p>
               </button>

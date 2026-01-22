@@ -42,6 +42,7 @@ import Admin from "./pages/Admin";
 import AdminMrwain from "./pages/AdminMrwain";
 import AdminSignup from "./pages/AdminSignup";
 import NotificationDemo from "./pages/NotificationDemo";
+import GlassDesign from "./pages/GlassDesign";
 
 const queryClient = new QueryClient();
 
@@ -127,6 +128,7 @@ const AppContent = () => {
           <Route path="/ads" element={<Ads />} />
           <Route path="/ads/create" element={<CreateAd />} />
           <Route path="/ads/demo" element={<AdsDemo />} />
+          <Route path="/glass-design" element={<GlassDesign />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin-mrwain" element={<AdminMrwain />} />

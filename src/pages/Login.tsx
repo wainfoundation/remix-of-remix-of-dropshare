@@ -48,7 +48,7 @@ const Login = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 bg-gradient-to-b from-background to-muted/20">
+    <div className="flex min-h-screen flex-col items-center justify-center px-4 bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-orange-400/20 dark:from-purple-900/30 dark:via-pink-900/30 dark:to-orange-900/30">
       <div className="w-full max-w-md space-y-8">
         {/* Logo & Header */}
         <div className="text-center space-y-2">
@@ -67,7 +67,7 @@ const Login = () => {
         </div>
 
         {/* Pi Network Authentication Card */}
-        <Card className="border-2">
+        <Card className="glass-card border-white/10">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-2xl">Welcome</CardTitle>
             <CardDescription>
@@ -90,7 +90,7 @@ const Login = () => {
 
         {/* Recent Accounts */}
         {recent.length > 0 && (
-          <Card>
+          <Card className="glass-card border-white/10">
             <CardHeader className="pb-2">
               <CardTitle className="text-base">Recent accounts</CardTitle>
               <CardDescription>Quickly sign in with a previously used account</CardDescription>

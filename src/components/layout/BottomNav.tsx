@@ -20,7 +20,7 @@ const BottomNav = () => {
 
   return (
     <nav className={cn(
-      "fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden transition-transform duration-300 ease-out",
+      "fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 glass backdrop-blur-xl md:hidden transition-transform duration-300 ease-out",
       scrollDirection === 'down' ? 'translate-y-full' : 'translate-y-0'
     )}>
       <div className="flex h-16 items-center justify-around">
@@ -33,8 +33,8 @@ const BottomNav = () => {
               key={path}
               to={path}
               className={cn(
-                "flex flex-col h-full flex-1 items-center justify-center gap-1 transition-colors",
-                isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                "flex flex-col h-full flex-1 items-center justify-center gap-1 transition-all rounded-lg",
+                isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground hover:glass-subtle"
               )}
               aria-label={label}
             >

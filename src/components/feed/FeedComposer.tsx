@@ -131,7 +131,7 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
   };
 
   return (
-    <div className="border-b border-border bg-background px-4 py-3">
+    <div className="glass-card mb-4 p-4">
       {!hasActiveSubscription && user && (
         <div className="mb-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-2">
           <p className="text-sm text-amber-900 dark:text-amber-200">

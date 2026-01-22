@@ -89,7 +89,7 @@ const PostCard = ({ post, onLike, onSave }: PostCardProps) => {
   const isReel = postType === 'reel';
 
   return (
-    <article className="border-b border-border bg-background">
+    <article className="glass-card mb-4 border border-white/10">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3">
         <Link

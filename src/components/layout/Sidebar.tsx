@@ -46,7 +46,7 @@ const Sidebar = ({ mobile = false, onNavigate }: SidebarProps) => {
 
   return (
     <aside className={cn(
-      "h-screen flex-col border-r border-border bg-background px-3 py-6 overflow-y-auto",
+      "h-screen flex-col glass-subtle border-r border-white/10 px-3 py-6 overflow-y-auto backdrop-blur-xl",
       mobile 
         ? "flex pt-16 w-full" 
         : "fixed left-0 top-0 z-50 hidden w-[72px] md:flex lg:w-[244px]"
@@ -100,8 +100,8 @@ const Sidebar = ({ mobile = false, onNavigate }: SidebarProps) => {
               to={path}
               onClick={onNavigate}
               className={cn(
-                "flex items-center gap-4 rounded-lg px-3 py-3 transition-colors hover:bg-secondary",
-                isActive ? "font-semibold" : "text-foreground"
+                "flex items-center gap-4 rounded-lg px-3 py-3 transition-all glass-subtle hover:glass",
+                isActive ? "font-semibold glass" : "text-foreground"
               )}
             >
               <Icon 

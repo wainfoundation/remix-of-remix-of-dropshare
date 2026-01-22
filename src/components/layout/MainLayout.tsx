@@ -59,7 +59,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-black">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-orange-400/20 dark:from-purple-900/30 dark:via-pink-900/30 dark:to-orange-900/30">
         <LoadingLogo size="xl" />
         <p className="mt-4 text-lg text-muted-foreground">Loading...</p>
       </div>
@@ -67,7 +67,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-orange-400/10 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-orange-900/20">
       {/* Desktop Sidebar - Always visible on md+ */}
       <div className="hidden md:block">
         <div className="fixed left-0 top-0 h-screen overflow-y-auto">

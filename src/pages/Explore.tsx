@@ -162,37 +162,37 @@ const Explore = () => {
     <MainLayout>
       <div className="mx-auto max-w-lg">
         {/* Search Header */}
-        <div className="sticky top-0 z-40 bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="sticky top-0 z-40 glass backdrop-blur-xl px-4 py-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/70" />
             <Input
               type="search"
               placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 rounded-full bg-secondary border-0"
+              className="pl-10 rounded-full glass-subtle border-white/10 text-white placeholder:text-white/60"
             />
           </div>
         </div>
 
         {/* Search Tabs */}
-        <div className="sticky top-14 z-30 flex border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:static md:top-auto md:z-auto md:bg-transparent md:backdrop-blur-0 md:supports-[backdrop-filter]:bg-transparent">
+        <div className="sticky top-14 z-30 flex border-b border-white/10 glass backdrop-blur-xl md:static md:top-auto md:z-auto">
           <button
             onClick={() => setSearchTab('top')}
-            className={`flex-1 border-b-2 px-4 py-3 text-center text-sm font-semibold transition-colors ${
+            className={`flex-1 border-b-2 px-4 py-3 text-center text-sm font-semibold transition-all ${
               searchTab === 'top'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
+                ? 'border-primary text-white'
+                : 'border-transparent text-white/70 hover:text-white'
             }`}
           >
             Top
           </button>
           <button
             onClick={() => setSearchTab('latest')}
-            className={`flex-1 border-b-2 px-4 py-3 text-center text-sm font-semibold transition-colors ${
+            className={`flex-1 border-b-2 px-4 py-3 text-center text-sm font-semibold transition-all ${
               searchTab === 'latest'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
+                ? 'border-primary text-white'
+                : 'border-transparent text-white/70 hover:text-white'
             }`}
           >
             Latest
