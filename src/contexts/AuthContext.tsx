@@ -10,6 +10,7 @@ interface Profile {
   display_name: string;
   bio: string | null;
   avatar_url: string | null;
+  cover_url: string | null;
   account_type: 'business' | 'shopper' | 'creator';
   website_url: string | null;
   store_category: string | null;

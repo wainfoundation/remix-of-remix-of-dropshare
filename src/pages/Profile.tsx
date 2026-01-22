@@ -361,21 +361,22 @@ const Profile = () => {
                 <BadgeCheck className="h-5 w-5 text-primary fill-primary" />
               )}
             </div>
-            <div className="flex items-center gap-2">
-              {isOwnProfile && (
-                <>
-                  <Button variant="ghost" size="icon" onClick={() => navigate('/notifications')}>
-                    <Bell className="h-5 w-5" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
-                    <MoreHorizontal className="h-5 w-5" />
-                  </Button>
-                </>
-              )}
-            </div>
           </div>
+          <div className="flex items-center gap-2">
+            {isOwnProfile && (
+              <>
+                <Button variant="ghost" size="icon" onClick={() => navigate('/notifications')}>
+                  <Bell className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
+                  <MoreHorizontal className="h-5 w-5" />
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
 
-          <div className="flex items-start gap-6 md:gap-12">
+        <div className="flex items-start gap-6 md:gap-12">
             {/* Avatar with story indicator */}
             <div className="relative flex-shrink-0">
               {hasActiveStories ? (
@@ -598,8 +599,9 @@ const Profile = () => {
               </div>
             )}
           </div>
+        </div>
 
-          {/* Action buttons - Mobile */}
+        {/* Action buttons - Mobile */}
           {!isOwnProfile && (
             <div className="flex gap-2 mt-4 md:hidden">
               <Button
