@@ -233,8 +233,8 @@ const Reels = () => {
             {/* Play/Pause overlay */}
             {!playing[reel.id] && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className={`rounded-full ${theme === 'dark' ? 'bg-black/30' : 'bg-white/30'} p-4`}>
-                  <Play className={`h-12 w-12 ${theme === 'dark' ? 'text-white fill-white' : 'text-black fill-black'}`} />
+                <div className="glass-strong backdrop-blur-xl rounded-full p-4">
+                  <Play className="h-12 w-12 text-white fill-white" />
                 </div>
               </div>
             )}
@@ -242,24 +242,24 @@ const Reels = () => {
             {/* Right sidebar actions */}
             <div className="absolute right-3 bottom-24 flex flex-col items-center gap-5">
               <button onClick={() => navigate(`/profile/${reel.profile?.username}`)}>
-                <Avatar className="h-10 w-10 border-2 border-white">
+                <Avatar className="h-10 w-10 border-2 border-white glass-strong backdrop-blur-xl">
                   <AvatarImage src={reel.profile?.avatar_url || undefined} />
                   <AvatarFallback>{reel.profile?.display_name?.[0]}</AvatarFallback>
                 </Avatar>
               </button>
               
-              <button onClick={() => handleLike(reel.id)} className="flex flex-col items-center">
-                <Heart className={`h-7 w-7 ${reel.is_liked ? 'fill-red-500 text-red-500' : theme === 'dark' ? 'text-white' : 'text-black'}`} />
-                <span className={`text-xs ${theme === 'dark' ? 'text-white' : 'text-black'} mt-1`}>{reel.likes_count}</span>
+              <button onClick={() => handleLike(reel.id)} className="flex flex-col items-center glass-subtle backdrop-blur-md rounded-full p-2">
+                <Heart className={`h-7 w-7 ${reel.is_liked ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+                <span className="text-xs text-white mt-1">{reel.likes_count}</span>
               </button>
               
-              <button onClick={() => setCommentsReelId(reel.id)} className="flex flex-col items-center">
-                <MessageCircle className={`h-7 w-7 ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
-                <span className={`text-xs ${theme === 'dark' ? 'text-white' : 'text-black'} mt-1`}>{reel.comments_count}</span>
+              <button onClick={() => setCommentsReelId(reel.id)} className="flex flex-col items-center glass-subtle backdrop-blur-md rounded-full p-2">
+                <MessageCircle className="h-7 w-7 text-white" />
+                <span className="text-xs text-white mt-1">{reel.comments_count}</span>
               </button>
               
-              <button onClick={() => handleShare(reel)} className="flex flex-col items-center">
-                <Share2 className={`h-7 w-7 ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
+              <button onClick={() => handleShare(reel)} className="flex flex-col items-center glass-subtle backdrop-blur-md rounded-full p-2">
+                <Share2 className="h-7 w-7 text-white" />
               </button>
               
               <ReelMenu reelId={reel.id} reelUserId={reel.user_id} onDelete={fetchReels} />
@@ -271,10 +271,10 @@ const Reels = () => {
                 onClick={() => navigate(`/profile/${reel.profile?.username}`)}
                 className="flex items-center gap-2 mb-2"
               >
-                <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{reel.profile?.username}</span>
+                <span className="font-semibold text-white drop-shadow-lg">{reel.profile?.username}</span>
               </button>
               {reel.caption && (
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-black'} line-clamp-2`}>{reel.caption}</p>
+                <p className="text-sm text-white drop-shadow-lg line-clamp-2">{reel.caption}</p>
               )}
             </div>
 

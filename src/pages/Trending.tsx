@@ -216,8 +216,8 @@ const Trending = () => {
       <div className="w-full">
         {/* Header */}
         <div className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-          <div className="px-4 py-3">
-            <h1 className="text-xl font-bold flex items-center gap-2">
+          <div className="glass backdrop-blur-xl border-b border-white/10 px-4 py-3">
+            <h1 className="text-xl font-bold flex items-center gap-2 text-white">
               <TrendingUp className="h-6 w-6" />
               Trending
             </h1>
@@ -245,10 +245,10 @@ const Trending = () => {
                   <button
                     key={hashtag.id}
                     onClick={() => setSelectedHashtag(hashtag.tag)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                       selectedHashtag === hashtag.tag
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-secondary hover:bg-secondary/80'
+                        ? 'glass-strong text-white'
+                        : 'glass-subtle text-white/80 hover:glass'
                     }`}
                   >
                     <Hash className="h-3 w-3 inline mr-1" />

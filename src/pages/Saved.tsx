@@ -173,8 +173,8 @@ const Saved = () => {
     <MainLayout>
       <div className="mx-auto max-w-lg">
         {/* Header for mobile */}
-        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
-          <h1 className="text-xl font-bold">Saved</h1>
+        <header className="glass backdrop-blur-xl border-b border-white/10 sticky top-0 z-40 flex h-14 items-center justify-between px-4 md:hidden">
+          <h1 className="text-xl font-bold text-white">Saved</h1>
         </header>
 
         {loading ? (

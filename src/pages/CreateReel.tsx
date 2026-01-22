@@ -140,11 +140,11 @@ const CreateReel = () => {
     <MainLayout>
       <div className="mx-auto max-w-lg">
         {/* Header */}
-        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background px-4">
-          <button onClick={() => navigate(-1)} className="p-2">
+        <header className="glass backdrop-blur-xl border-b border-white/10 sticky top-0 z-40 flex h-14 items-center justify-between px-4">
+          <button onClick={() => navigate(-1)} className="p-2 text-white">
             <ArrowLeft className="h-6 w-6" />
           </button>
-          <h1 className="text-lg font-semibold">New Reel</h1>
+          <h1 className="text-lg font-semibold text-white">New Reel</h1>
           <Button
             size="sm"
             onClick={handleSubmit}
@@ -179,13 +179,13 @@ const CreateReel = () => {
               </div>
             ) : (
               <div className="flex aspect-[9/16] w-full max-w-xs mx-auto flex-col gap-4 justify-center">
-                <Card className="border-2 border-dashed hover:border-primary/50 transition-colors cursor-pointer">
+                <Card className="glass-card border-white/10 border-2 border-dashed hover:border-white/30 transition-colors cursor-pointer">
                   <CardContent className="flex flex-col items-center justify-center p-8 text-center">
-                    <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                      <Video className="h-8 w-8 text-primary" />
+                    <div className="h-16 w-16 rounded-full bg-white/10 flex items-center justify-center mb-4">
+                      <Video className="h-8 w-8 text-white" />
                     </div>
-                    <h3 className="font-semibold text-lg mb-2">Create a video reel</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
+                    <h3 className="font-semibold text-lg mb-2 text-white">Create a video reel</h3>
+                    <p className="text-sm text-white/70 mb-4">
                       Share short, engaging videos
                     </p>
                     <label className="cursor-pointer">

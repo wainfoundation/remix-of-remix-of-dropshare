@@ -268,11 +268,11 @@ const Analytics = () => {
     <MainLayout>
       <div className="mx-auto max-w-2xl pb-20">
         {/* Header */}
-        <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b border-border bg-background px-4">
-          <button onClick={() => navigate(-1)} className="p-2">
+        <header className="glass backdrop-blur-xl border-b border-white/10 sticky top-0 z-40 flex h-14 items-center gap-4 px-4">
+          <button onClick={() => navigate(-1)} className="p-2 text-white">
             <ArrowLeft className="h-6 w-6" />
           </button>
-          <h1 className="text-lg font-semibold">Analytics Dashboard</h1>
+          <h1 className="text-lg font-semibold text-white">Analytics Dashboard</h1>
         </header>
 
         {loading ? (
@@ -292,46 +292,46 @@ const Analytics = () => {
             <TabsContent value="overview" className="p-4 space-y-6">
               {/* Unified Stats Grid */}
               <div className="grid grid-cols-2 gap-3">
-                <Card>
+                <Card className="glass-card border-white/10">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                    <CardTitle className="text-sm font-medium text-white/70 flex items-center gap-2">
                       <Eye className="h-4 w-4" />
                       Views
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold">{analytics.totalViews.toLocaleString()}</span>
+                      <span className="text-2xl font-bold text-white">{analytics.totalViews.toLocaleString()}</span>
                       <GrowthIndicator value={analytics.growth.views.growth} />
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="glass-card border-white/10">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                    <CardTitle className="text-sm font-medium text-white/70 flex items-center gap-2">
                       <Heart className="h-4 w-4" />
                       Likes
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold">{analytics.totalLikes.toLocaleString()}</span>
+                      <span className="text-2xl font-bold text-white">{analytics.totalLikes.toLocaleString()}</span>
                       <GrowthIndicator value={analytics.growth.likes.growth} />
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="glass-card border-white/10">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                    <CardTitle className="text-sm font-medium text-white/70 flex items-center gap-2">
                       <Share2 className="h-4 w-4" />
                       Shares
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold">{analytics.totalShares.toLocaleString()}</span>
+                      <span className="text-2xl font-bold text-white">{analytics.totalShares.toLocaleString()}</span>
                       <GrowthIndicator value={analytics.growth.shares.growth} />
                     </div>
                   </CardContent>

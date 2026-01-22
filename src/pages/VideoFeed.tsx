@@ -229,11 +229,11 @@ const VideoFeed = () => {
     <MainLayout>
       <div className="min-h-screen bg-background">
         {/* Header */}
-        <div className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="glass backdrop-blur-xl border-b border-white/10 sticky top-0 z-40">
           <div className="flex items-center justify-center px-4 py-4">
             <div className="flex items-center gap-2">
-              <Play className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold">Videos</h1>
+              <Play className="h-6 w-6 text-white" />
+              <h1 className="text-xl font-bold text-white">Videos</h1>
             </div>
           </div>
         </div>

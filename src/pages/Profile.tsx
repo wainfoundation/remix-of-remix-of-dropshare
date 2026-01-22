@@ -20,6 +20,7 @@ interface Profile {
   display_name: string;
   bio: string | null;
   avatar_url: string | null;
+  cover_url: string | null;
   account_type: 'business' | 'shopper' | 'creator';
   website_url: string | null;
   store_category: string | null;
@@ -291,13 +292,70 @@ const Profile = () => {
   return (
     <MainLayout>
       <div className="mx-auto max-w-4xl">
+        {/* Cover Image */}
+        <div className="relative h-48 md:h-64 overflow-hidden">
+          {profile.cover_url ? (
+            <img
+              src={profile.cover_url}
+              alt="Cover"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400" />
+          )}
+          <div className="absolute inset-0 bg-black/20" />
+          
+          {/* Edit Cover Button - Only visible on own profile */}
+          {isOwnProfile && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/edit-profile')}
+              className="absolute top-4 right-4 glass backdrop-blur-xl text-white hover:glass-strong"
+            >
+              <Camera className="h-4 w-4 mr-2" />
+              Edit Cover
+            </Button>
+          )}
+        </div>
+
         {/* Profile Header */}
-        <header className="px-4 py-6 md:px-8">
-          {/* Mobile header row */}
-          <div className="flex items-center justify-between mb-4 md:hidden">
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold">{profile.username.replace('@', '')}</h1>
-              {isWain2020 ? (
+        <header className="relative px-4 md:px-8">
+          {/* Avatar positioned to overlap cover */}
+          <div className="relative -mt-16 md:-mt-20 mb-4">
+            <div className="glass-strong p-2 rounded-full inline-block">
+              {hasActiveStories ? (
+                <Link to={`/story/${profile.username}`}>
+                  <div className="relative">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500 p-0.5">
+                      <div className="h-full w-full rounded-full bg-background" />
+                    </div>
+                    <Avatar className="h-28 w-28 md:h-36 md:w-36 relative border-4 border-background">
+                      <AvatarImage src={profile.avatar_url || undefined} />
+                      <AvatarFallback className="text-3xl md:text-4xl">
+                        {profile.display_name[0]?.toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                </Link>
+              ) : (
+                <Avatar className="h-28 w-28 md:h-36 md:w-36 border-4 border-background">
+                  <AvatarImage src={profile.avatar_url || undefined} />
+                  <AvatarFallback className="text-3xl md:text-4xl">
+                    {profile.display_name[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              )}
+            </div>
+          </div>
+
+          {/* Profile Info */}
+          <div className="glass-card p-6 mb-4">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="text-2xl font-bold text-white">{profile.display_name}</h1>
+                  {isWain2020 ? (
                 <VerifiedBadge size="sm" />
               ) : (profile.account_type === 'business' || profile.account_type === 'creator' || profile.is_verified) && (
                 <BadgeCheck className="h-5 w-5 text-primary fill-primary" />

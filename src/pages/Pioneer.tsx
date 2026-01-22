@@ -164,18 +164,18 @@ const Pioneer = () => {
     <MainLayout>
       <div className="mx-auto max-w-2xl">
         {/* Header */}
-        <div className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="sticky top-0 z-40 border-b border-white/10 glass backdrop-blur-xl">
           <div className="px-4 py-3">
-            <h1 className="text-xl font-bold mb-3">Pioneer</h1>
+            <h1 className="text-xl font-bold mb-3 text-white">Pioneer</h1>
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/70" />
               <Input
                 type="text"
                 placeholder="Search people..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
+                className="pl-9 glass-subtle border-white/10 text-white placeholder:text-white/60"
               />
             </div>
           </div>
@@ -190,7 +190,7 @@ const Pioneer = () => {
           ) : filteredProfiles.length > 0 ? (
             <div className="space-y-3">
               {filteredProfiles.map((profile) => (
-                <Card key={profile.user_id}>
+                <Card key={profile.user_id} className="glass-card border-white/10">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
                       <Avatar

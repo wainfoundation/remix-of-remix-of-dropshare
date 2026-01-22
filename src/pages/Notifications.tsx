@@ -190,11 +190,11 @@ const Notifications = () => {
     <MainLayout>
       <div className="mx-auto max-w-lg">
         {/* Header */}
-        <header className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-background px-4">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+        <header className="glass backdrop-blur-xl border-b border-white/10 sticky top-0 z-40 flex h-14 items-center px-4">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-white">
             <ArrowLeft className="h-6 w-6" />
           </button>
-          <h1 className="flex-1 text-center text-lg font-semibold pr-8">Notifications</h1>
+          <h1 className="flex-1 text-center text-lg font-semibold pr-8 text-white">Notifications</h1>
         </header>
 
         {loading ? (
@@ -214,7 +214,7 @@ const Notifications = () => {
             {Object.entries(groupedNotifications).map(([group, items]) => 
               items.length > 0 && (
                 <div key={group}>
-                  <h2 className="px-4 py-3 text-sm font-semibold bg-secondary/50">{group}</h2>
+                  <h2 className="px-4 py-3 text-sm font-semibold glass-subtle text-white/80">{group}</h2>
                   {items.map((notification) => (
                     <button
                       key={notification.id}
