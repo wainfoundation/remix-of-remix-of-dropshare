@@ -354,7 +354,7 @@ const Profile = () => {
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-2xl font-bold text-white">{profile.display_name}</h1>
+                  <h1 className="text-2xl font-bold text-foreground">{profile.display_name}</h1>
                   {isWain2020 ? (
                 <VerifiedBadge size="sm" />
               ) : (profile.account_type === 'business' || profile.account_type === 'creator' || profile.is_verified) && (
