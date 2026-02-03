@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Settings, Grid3X3, Bookmark, ExternalLink, MessageCircle, Bell, Film, MoreHorizontal, BadgeCheck, UserPlus, Play } from 'lucide-react';
+import { Settings, Grid3X3, Bookmark, ExternalLink, MessageCircle, Bell, Film, MoreHorizontal, BadgeCheck, UserPlus, Play, Camera } from 'lucide-react';
 import VerifiedBadge from '@/components/ui/VerifiedBadge';
 import MainLayout from '@/components/layout/MainLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -100,7 +100,11 @@ const Profile = () => {
       return;
     }
 
-    setProfile(profileData as Profile);
+    // Add cover_url with null default if not present in DB
+    setProfile({
+      ...profileData,
+      cover_url: (profileData as any).cover_url ?? null,
+    } as unknown as Profile);
 
     // Check for active stories
     const now = new Date().toISOString();
@@ -293,7 +297,7 @@ const Profile = () => {
     <MainLayout>
       <div className="mx-auto max-w-4xl">
         {/* Cover Image */}
-        <div className="relative h-48 md:h-64 overflow-hidden">
+        <div className="relative h-48 md:h-64 overflow-hidden rounded-b-xl">
           {profile.cover_url ? (
             <img
               src={profile.cover_url}
@@ -320,76 +324,20 @@ const Profile = () => {
         </div>
 
         {/* Profile Header */}
-        <header className="relative px-4 md:px-8">
+        <div className="relative px-4 md:px-8">
           {/* Avatar positioned to overlap cover */}
-          <div className="relative -mt-16 md:-mt-20 mb-4">
-            <div className="glass-strong p-2 rounded-full inline-block">
-              {hasActiveStories ? (
-                <Link to={`/story/${profile.username}`}>
-                  <div className="relative">
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500 p-0.5">
-                      <div className="h-full w-full rounded-full bg-background" />
-                    </div>
-                    <Avatar className="h-28 w-28 md:h-36 md:w-36 relative border-4 border-background">
-                      <AvatarImage src={profile.avatar_url || undefined} />
-                      <AvatarFallback className="text-3xl md:text-4xl">
-                        {profile.display_name[0]?.toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                </Link>
-              ) : (
-                <Avatar className="h-28 w-28 md:h-36 md:w-36 border-4 border-background">
-                  <AvatarImage src={profile.avatar_url || undefined} />
-                  <AvatarFallback className="text-3xl md:text-4xl">
-                    {profile.display_name[0]?.toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              )}
-            </div>
-          </div>
-
-          {/* Profile Info */}
-          <div className="glass-card p-6 mb-4">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-2xl font-bold text-foreground">{profile.display_name}</h1>
-                  {isWain2020 ? (
-                <VerifiedBadge size="sm" />
-              ) : (profile.account_type === 'business' || profile.account_type === 'creator' || profile.is_verified) && (
-                <BadgeCheck className="h-5 w-5 text-primary fill-primary" />
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {isOwnProfile && (
-              <>
-                <Button variant="ghost" size="icon" onClick={() => navigate('/notifications')}>
-                  <Bell className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
-                  <MoreHorizontal className="h-5 w-5" />
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-start gap-6 md:gap-12">
-            {/* Avatar with story indicator */}
-            <div className="relative flex-shrink-0">
+          <div className="relative -mt-16 md:-mt-20 mb-4 flex items-end gap-4">
+            <div className="glass-strong p-1 rounded-full inline-block">
               {hasActiveStories ? (
                 <button
                   onClick={() => navigate(`/story/${profile.username}`)}
                   className="relative block"
                 >
-                  {/* Neon gradient ring for active stories */}
-                  <div className="relative p-[3px] bg-gradient-to-tr from-cyan-400 via-fuchsia-500 to-lime-400 rounded-full animate-pulse">
-                    <div className="bg-background rounded-full p-[3px]">
-                      <Avatar className="h-20 w-20 md:h-36 md:w-36">
+                  <div className="relative p-[3px] bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500 rounded-full">
+                    <div className="bg-background rounded-full p-[2px]">
+                      <Avatar className="h-24 w-24 md:h-32 md:w-32">
                         <AvatarImage src={profile.avatar_url || undefined} />
-                        <AvatarFallback className="text-2xl md:text-4xl bg-secondary">
+                        <AvatarFallback className="text-2xl md:text-4xl">
                           {profile.display_name[0]?.toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
@@ -397,157 +345,172 @@ const Profile = () => {
                   </div>
                 </button>
               ) : (
-                <div className="relative">
-                  <Avatar className="h-20 w-20 md:h-36 md:w-36">
-                    <AvatarImage src={profile.avatar_url || undefined} />
-                    <AvatarFallback className="text-2xl md:text-4xl bg-secondary">
-                      {profile.display_name[0]?.toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
+                <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-background">
+                  <AvatarImage src={profile.avatar_url || undefined} />
+                  <AvatarFallback className="text-2xl md:text-4xl">
+                    {profile.display_name[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
               )}
             </div>
-
-            {/* Info */}
-            <div className="flex-1 min-w-0">
-              {/* Desktop username row */}
-              <div className="hidden md:flex flex-wrap items-center gap-3 mb-5">
-                <h1 className="text-xl font-normal">{profile.username.replace('@', '')}</h1>
-                {isWain2020 ? (
-                  <VerifiedBadge size="sm" />
-                ) : (profile.account_type === 'business' || profile.account_type === 'creator' || profile.is_verified) && (
-                  <BadgeCheck className="h-5 w-5 text-primary fill-primary" />
-                )}
-                {isOwnProfile ? (
-                  <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" className="h-8 px-4 font-semibold" asChild>
-                      <Link to="/settings">Edit profile</Link>
-                    </Button>
-                    <Button variant="secondary" size="sm" className="h-8 px-4 font-semibold" onClick={() => navigate('/settings')}>
-                      View archive
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate('/settings')}>
-                      <Settings className="h-5 w-5" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      className="h-8 px-6 font-semibold"
-                      variant={isFollowing ? 'secondary' : 'default'}
-                      onClick={handleFollow}
-                      disabled={!user}
-                    >
-                      {isFollowing ? 'Following' : 'Follow'}
-                    </Button>
-                    {canMessage && (
-                      <Button size="sm" variant="secondary" className="h-8 px-6 font-semibold" onClick={handleMessage}>
-                        Message
-                      </Button>
-                    )}
-                    <Button variant="secondary" size="icon" className="h-8 w-8">
-                      <UserPlus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              {/* Stats - Desktop */}
-              <div className="hidden md:flex gap-8 mb-5">
-                <div>
-                  <span className="font-semibold">{posts.length}</span>{' '}
-                  <span className="text-muted-foreground">posts</span>
-                </div>
-                <button onClick={() => setShowFollowersModal(true)} className="hover:opacity-70 transition">
-                  <span className="font-semibold">{followersCount.toLocaleString()}</span>{' '}
-                  <span className="text-muted-foreground">followers</span>
-                </button>
-                <button onClick={() => setShowFollowingModal(true)} className="hover:opacity-70 transition">
-                  <span className="font-semibold">{followingCount.toLocaleString()}</span>{' '}
-                  <span className="text-muted-foreground">following</span>
-                </button>
-              </div>
-
-              {/* Bio - Desktop */}
-              <div className="hidden md:block space-y-1">
-                <p className="font-semibold">{profile.display_name}</p>
-                {getAccountLabel() && (
-                  <Badge variant="secondary" className="text-xs font-normal">
-                    {getAccountLabel()}
-                  </Badge>
-                )}
-                {profile.bio && (
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed">
-                    {profile.bio.split('\n').map((line, i) => (
-                      <span key={i}>
-                        {line}
-                        {i < profile.bio!.split('\n').length - 1 && <br />}
-                      </span>
-                    ))}
-                  </p>
-                )}
-                {profile.website_url && (
-                  <a
-                    href={profile.website_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:opacity-70 transition"
+            
+            {/* Desktop action buttons next to avatar */}
+            <div className="hidden md:flex gap-2 mb-2">
+              {isOwnProfile ? (
+                <>
+                  <Button variant="secondary" size="sm" className="h-8 px-4 font-semibold" asChild>
+                    <Link to="/settings">Edit profile</Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate('/settings')}>
+                    <Settings className="h-5 w-5" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    size="sm"
+                    className="h-8 px-6 font-semibold"
+                    variant={isFollowing ? 'secondary' : 'default'}
+                    onClick={handleFollow}
+                    disabled={!user}
                   >
-                    {profile.website_url.replace(/^https?:\/\/(www\.)?/, '')}
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                )}
-                {/* Mutual followers */}
-                {!isOwnProfile && mutualFollowers.length > 0 && (
-                  <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
-                    <div className="flex -space-x-2">
-                      {mutualFollowers.slice(0, 2).map((follower) => (
-                        <Avatar key={follower.id} className="h-5 w-5 border-2 border-background">
-                          <AvatarImage src={follower.avatar_url || undefined} />
-                          <AvatarFallback className="text-xs">
-                            {follower.display_name[0]?.toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      ))}
-                    </div>
-                    <span className="text-xs">
-                      Followed by{' '}
-                      <button className="font-semibold text-foreground hover:opacity-70">
-                        {mutualFollowers[0].username.replace('@', '')}
-                      </button>
-                      {mutualFollowers.length > 1 && (
-                        <>
-                          {mutualFollowers.length === 2 ? (
-                            <>
-                              {' '}and{' '}
-                              <button className="font-semibold text-foreground hover:opacity-70">
-                                {mutualFollowers[1].username.replace('@', '')}
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              {' '}, {' '}
-                              <button className="font-semibold text-foreground hover:opacity-70">
-                                {mutualFollowers[1].username.replace('@', '')}
-                              </button>
-                              {mutualFollowers.length > 2 && (
-                                <span> + {mutualFollowers.length - 2} more</span>
-                              )}
-                            </>
-                          )}
-                        </>
-                      )}
-                    </span>
-                  </div>
-                )}
-              </div>
+                    {isFollowing ? 'Following' : 'Follow'}
+                  </Button>
+                  {canMessage && (
+                    <Button size="sm" variant="secondary" className="h-8 px-6 font-semibold" onClick={handleMessage}>
+                      Message
+                    </Button>
+                  )}
+                  <Button variant="secondary" size="icon" className="h-8 w-8">
+                    <UserPlus className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Bio - Mobile */}
-          <div className="mt-4 md:hidden space-y-1">
-            <p className="font-semibold text-sm">{profile.display_name}</p>
+          {/* Profile Info Card */}
+          <div className="glass-card p-4 md:p-6 mb-4">
+            {/* Name and verification */}
+            <div className="flex items-center gap-2 mb-2">
+              <h1 className="text-xl md:text-2xl font-bold text-foreground">{profile.display_name}</h1>
+              {isWain2020 ? (
+                <VerifiedBadge size="sm" />
+              ) : (profile.account_type === 'business' || profile.account_type === 'creator' || profile.is_verified) && (
+                <BadgeCheck className="h-5 w-5 text-primary fill-primary" />
+              )}
+            </div>
+            
+            {/* Username */}
+            <p className="text-muted-foreground mb-2">{profile.username}</p>
+            
+            {/* Account type badge */}
+            {getAccountLabel() && (
+              <Badge variant="secondary" className="text-xs font-normal mb-3">
+                {getAccountLabel()}
+              </Badge>
+            )}
+
+            {/* Stats */}
+            <div className="flex gap-6 mb-4">
+              <div className="text-center">
+                <span className="font-semibold">{posts.length}</span>{' '}
+                <span className="text-muted-foreground text-sm">posts</span>
+              </div>
+              <button onClick={() => setShowFollowersModal(true)} className="text-center hover:opacity-70 transition">
+                <span className="font-semibold">{followersCount.toLocaleString()}</span>{' '}
+                <span className="text-muted-foreground text-sm">followers</span>
+              </button>
+              <button onClick={() => setShowFollowingModal(true)} className="text-center hover:opacity-70 transition">
+                <span className="font-semibold">{followingCount.toLocaleString()}</span>{' '}
+                <span className="text-muted-foreground text-sm">following</span>
+              </button>
+            </div>
+            
+            {/* Bio */}
+            {profile.bio && (
+              <p className="whitespace-pre-wrap text-sm leading-relaxed mb-3">
+                {profile.bio.split('\n').map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    {i < profile.bio!.split('\n').length - 1 && <br />}
+                  </span>
+                ))}
+              </p>
+            )}
+            
+            {/* Website */}
+            {profile.website_url && (
+              <a
+                href={profile.website_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:opacity-70 transition mb-3"
+              >
+                {profile.website_url.replace(/^https?:\/\/(www\.)?/, '')}
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            )}
+
+            {/* Mutual followers */}
+            {!isOwnProfile && mutualFollowers.length > 0 && (
+              <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
+                <div className="flex -space-x-2">
+                  {mutualFollowers.slice(0, 2).map((follower) => (
+                    <Avatar key={follower.id} className="h-5 w-5 border-2 border-background">
+                      <AvatarImage src={follower.avatar_url || undefined} />
+                      <AvatarFallback className="text-xs">
+                        {follower.display_name[0]?.toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  ))}
+                </div>
+                <span className="text-xs">
+                  Followed by{' '}
+                  <span className="font-semibold text-foreground">
+                    {mutualFollowers[0].username.replace('@', '')}
+                  </span>
+                  {mutualFollowers.length > 1 && (
+                    <span> and {mutualFollowers.length - 1} other{mutualFollowers.length > 2 ? 's' : ''}</span>
+                  )}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Action buttons */}
+          <div className="flex gap-2 mb-4 md:hidden">
+            {isOwnProfile ? (
+              <>
+                <Button className="flex-1 h-9 font-semibold" variant="secondary" asChild>
+                  <Link to="/settings">Edit profile</Link>
+                </Button>
+                <Button className="flex-1 h-9 font-semibold" variant="secondary" onClick={handleShareProfile}>
+                  Share Profile
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  className="flex-1 h-9 font-semibold"
+                  variant={isFollowing ? 'secondary' : 'default'}
+                  onClick={handleFollow}
+                  disabled={!user}
+                >
+                  {isFollowing ? 'Following' : 'Follow'}
+                </Button>
+                {canMessage && (
+                  <Button className="flex-1 h-9 font-semibold" variant="secondary" onClick={handleMessage}>
+                    Message
+                  </Button>
+                )}
+                <Button variant="secondary" size="icon" className="h-9 w-9">
+                  <UserPlus className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
             {getAccountLabel() && (
               <Badge variant="secondary" className="text-xs font-normal">
                 {getAccountLabel()}
