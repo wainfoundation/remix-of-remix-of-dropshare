@@ -22,8 +22,8 @@ export function isPiSdkInitialized(): boolean {
 }
 
 /**
- * Initialize Pi SDK (Legacy function - SDK is now initialized in HTML)
- * This function now just checks if SDK is available
+ * Initialize Pi SDK
+ * Per Pi documentation: Pi.init({ version: "2.0", sandbox: false }) for production
  */
 export async function initPiSdk(config: PiInitConfig = { version: "2.0" }): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -34,8 +34,19 @@ export async function initPiSdk(config: PiInitConfig = { version: "2.0" }): Prom
 
     // Check if Pi SDK is available (should be loaded via HTML script tag)
     if (window.Pi) {
-      console.log('Pi SDK is available and initialized');
-      resolve();
+      // Initialize Pi SDK with configuration (production mode by default)
+      try {
+        window.Pi.init({ 
+          version: config.version || "2.0", 
+          sandbox: config.sandbox ?? false  // Production mode by default
+        });
+        console.log('Pi SDK initialized successfully (production mode)');
+        resolve();
+      } catch (error) {
+        console.error('Pi SDK init error:', error);
+        // Even if init fails, the SDK may still be usable
+        resolve();
+      }
     } else {
       reject(new Error('Pi SDK not available. Please ensure you are using Pi Browser and the SDK script is loaded in HTML.'));
     }
