@@ -1,4 +1,4 @@
-// Ambient type shims for Deno/Supabase Edge Functions to satisfy VS Code TypeScript
+// Ambient type shims for Supabase Edge Functions to satisfy VS Code TypeScript
 // These are editor-only hints; Deno will use real remote modules at runtime.
 
 declare module "https://deno.land/std@0.168.0/http/server.ts" {
@@ -15,6 +15,5 @@ declare module "https://esm.sh/@supabase/supabase-js@2" {
   ): any;
 }
 
-declare const Deno: {
-  env: { get(name: string): string | undefined };
-};
+// NOTE: The Deno global is provided automatically by the Deno runtime.
+// We do not re-declare it here to avoid conflicts with Deno's built-in types.

@@ -87,7 +87,7 @@ serve(async (req) => {
     }
 
     const existingAuthUser = usersPage?.users?.find(
-      (u) => u.user_metadata?.pi_uid === piUserData.uid
+      (u: { user_metadata?: { pi_uid?: string } }) => u.user_metadata?.pi_uid === piUserData.uid
     );
 
     const { data: existingProfile, error: profileError } = await supabase
