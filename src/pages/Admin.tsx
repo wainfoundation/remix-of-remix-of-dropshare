@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+ import { useEffect, useState, FormEvent } from 'react';
+ import { useNavigate, Link } from 'react-router-dom';
 import { 
   Users, BarChart3, Flag, CheckCircle, XCircle, 
   AlertTriangle, Shield, Coins, Activity, 
@@ -10,8 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LoadingLogo } from '@/components/ui/loading-logo';
-import { useAuth } from '@/contexts/AuthContext';
+ import { LoadingLogo } from '@/components/ui/loading-logo';
+ import { Input } from '@/components/ui/input';
+ import { Label } from '@/components/ui/label';
+ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -61,10 +63,16 @@ interface UserActivity {
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { profile } = useAuth();
+   const { profile, user } = useAuth();
   const { toast } = useToast();
   
   const [loading, setLoading] = useState(true);
+   const [isSigningIn, setIsSigningIn] = useState(false);
+   const [isSigningUp, setIsSigningUp] = useState(false);
+   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+   const [email, setEmail] = useState('');
+   const [password, setPassword] = useState('');
+   const [adminSession, setAdminSession] = useState<boolean>(false);
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     activeUsers: 0,
@@ -79,14 +87,136 @@ const Admin = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [users, setUsers] = useState<UserActivity[]>([]);
 
-  // Check if user is admin
+   // Check if user is admin (email-based auth only)
   useEffect(() => {
-    if (!profile || profile?.username !== 'admin') {
-      navigate('/');
-      return;
+     const checkAdminSession = async () => {
+       // Check Supabase session for email-based admin
+       const { data: { session } } = await supabase.auth.getSession();
+       
+       if (session?.user?.email === 'sibiyagaming@gmail.com') {
+         setAdminSession(true);
+         fetchAdminData();
+       } else {
+         setAdminSession(false);
+         setLoading(false);
+       }
+     };
+ 
+     checkAdminSession();
+ 
+     // Listen for auth changes
+     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+       if (session?.user?.email === 'sibiyagaming@gmail.com') {
+         setAdminSession(true);
+         fetchAdminData();
+       } else {
+         setAdminSession(false);
+         setLoading(false);
+       }
+     });
+ 
+     return () => subscription.unsubscribe();
+   }, []);
+ 
+   const handleEmailSignIn = async (e: FormEvent) => {
+     e.preventDefault();
+     setIsSigningIn(true);
+     
+     try {
+       const { data, error } = await supabase.auth.signInWithPassword({
+         email,
+         password,
+       });
+ 
+       if (error) {
+         toast({
+           title: "Sign In Failed",
+           description: error.message,
+           variant: "destructive",
+         });
+         return;
+       }
+ 
+       if (data.user?.email !== 'sibiyagaming@gmail.com') {
+         await supabase.auth.signOut();
+         toast({
+           title: "Access Denied",
+           description: "This admin panel is restricted.",
+           variant: "destructive",
+         });
+         return;
+       }
+ 
+       toast({
+         title: "Welcome Admin!",
+         description: "You have successfully signed in.",
+       });
+       
+       setAdminSession(true);
+       fetchAdminData();
+     } catch (error) {
+       toast({
+         title: "Error",
+         description: "An unexpected error occurred.",
+         variant: "destructive",
+       });
+     } finally {
+       setIsSigningIn(false);
     }
-    fetchAdminData();
-  }, [profile, navigate]);
+   };
+ 
+   const handleEmailSignUp = async (e: FormEvent) => {
+     e.preventDefault();
+     setIsSigningUp(true);
+     
+     try {
+       if (email !== 'sibiyagaming@gmail.com') {
+         toast({
+           title: "Registration Restricted",
+           description: "Admin registration is by invitation only.",
+           variant: "destructive",
+         });
+         return;
+       }
+ 
+       const { data, error } = await supabase.auth.signUp({
+         email,
+         password,
+         options: {
+           emailRedirectTo: `${window.location.origin}/admin`,
+         },
+       });
+ 
+       if (error) {
+         toast({
+           title: "Sign Up Failed",
+           description: error.message,
+           variant: "destructive",
+         });
+         return;
+       }
+ 
+       toast({
+         title: "Check Your Email",
+         description: "Please verify your email to complete registration.",
+       });
+     } catch (error) {
+       toast({
+         title: "Error",
+         description: "An unexpected error occurred.",
+         variant: "destructive",
+       });
+     } finally {
+       setIsSigningUp(false);
+     }
+   };
+ 
+   const handleAdminSignOut = async () => {
+     await supabase.auth.signOut();
+     setAdminSession(false);
+     setEmail('');
+     setPassword('');
+   };
 
   const fetchAdminData = async () => {
     try {
@@ -108,6 +238,87 @@ const Admin = () => {
       setLoading(false);
     }
   };
+   
+   // Show auth form if not signed in as admin
+   if (!adminSession && !loading) {
+     return (
+       <div className="flex min-h-screen flex-col items-center justify-center px-4 bg-background">
+         <div className="w-full max-w-md space-y-6">
+           <div className="text-center space-y-2">
+             <div className="flex justify-center mb-4">
+               <Shield className="h-16 w-16 text-primary" />
+             </div>
+             <h1 className="text-3xl font-bold">Admin Portal</h1>
+             <p className="text-muted-foreground">
+               Secure access for administrators only
+             </p>
+           </div>
+ 
+           <Card>
+             <CardHeader className="text-center pb-4">
+               <CardTitle>{authMode === 'signin' ? 'Sign In' : 'Sign Up'}</CardTitle>
+             </CardHeader>
+             <CardContent>
+               <form onSubmit={authMode === 'signin' ? handleEmailSignIn : handleEmailSignUp} className="space-y-4">
+                 <div className="space-y-2">
+                   <Label htmlFor="email">Email</Label>
+                   <Input
+                     id="email"
+                     type="email"
+                     value={email}
+                     onChange={(e) => setEmail(e.target.value)}
+                     placeholder="admin@example.com"
+                     required
+                   />
+                 </div>
+                 <div className="space-y-2">
+                   <Label htmlFor="password">Password</Label>
+                   <Input
+                     id="password"
+                     type="password"
+                     value={password}
+                     onChange={(e) => setPassword(e.target.value)}
+                     placeholder="••••••••"
+                     required
+                     minLength={6}
+                   />
+                 </div>
+                 <Button 
+                   type="submit" 
+                   className="w-full" 
+                   disabled={isSigningIn || isSigningUp}
+                 >
+                   {isSigningIn || isSigningUp ? (
+                     <LoadingLogo size="sm" />
+                   ) : authMode === 'signin' ? (
+                     'Sign In'
+                   ) : (
+                     'Sign Up'
+                   )}
+                 </Button>
+               </form>
+ 
+               <div className="mt-4 text-center">
+                 <button
+                   type="button"
+                   onClick={() => setAuthMode(authMode === 'signin' ? 'signup' : 'signin')}
+                   className="text-sm text-primary hover:underline"
+                 >
+                   {authMode === 'signin' ? "Don't have an account? Sign Up" : 'Already have an account? Sign In'}
+                 </button>
+               </div>
+             </CardContent>
+           </Card>
+ 
+           <div className="text-center">
+             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+               ← Back to DropShare
+             </Link>
+           </div>
+         </div>
+       </div>
+     );
+   }
 
   const fetchStats = async () => {
     const [
@@ -262,7 +473,7 @@ const Admin = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate('/')}
+               onClick={handleAdminSignOut}
             >
               <ArrowLeft className="h-6 w-6" />
             </Button>
