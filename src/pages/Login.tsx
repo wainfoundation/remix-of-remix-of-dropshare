@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { PiAuthComponent } from '@/components/auth/PiAuthComponent';
@@ -48,7 +48,7 @@ const Login = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-orange-400/20 dark:from-purple-900/30 dark:via-pink-900/30 dark:to-orange-900/30">
+     <div className="flex min-h-screen flex-col items-center justify-center px-4 bg-background">
       <div className="w-full max-w-md space-y-8">
         {/* Logo & Header */}
         <div className="text-center space-y-2">

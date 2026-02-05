@@ -22,8 +22,9 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const canCreate = profile?.account_type === 'creator' || profile?.account_type === 'business';
-  const hasActiveSubscription = canCreate && profile?.subscription_status === 'active';
-  const canPostText = !!user && text.trim().length > 0 && hasActiveSubscription;
+   // All account types can post now (free tier)
+   const canPost = !!user && canCreate;
+   const canPostText = canPost && text.trim().length > 0;
 
   const handlePostText = async () => {
     if (!user) {
@@ -33,11 +34,6 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
 
     if (!canCreate) {
       toast({ title: 'Creator or Business account required to post', variant: 'destructive' });
-      return;
-    }
-
-    if (!hasActiveSubscription) {
-      toast({ title: 'Active subscription required to post', variant: 'destructive' });
       return;
     }
 
@@ -70,11 +66,6 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
 
     if (!canCreate) {
       toast({ title: 'Creator or Business account required to post', variant: 'destructive' });
-      return;
-    }
-
-    if (!hasActiveSubscription) {
-      toast({ title: 'Active subscription required to post', variant: 'destructive' });
       return;
     }
 
@@ -132,10 +123,10 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
 
   return (
     <div className="glass-card mb-4 p-4">
-      {!hasActiveSubscription && user && (
+       {!canPost && user && (
         <div className="mb-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-2">
           <p className="text-sm text-amber-900 dark:text-amber-200">
-            {!canCreate ? 'Only Creator and Business accounts can post' : 'Please renew your subscription to continue posting'}
+             Only Creator and Business accounts can post content
           </p>
         </div>
       )}
@@ -146,10 +137,10 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
         </Avatar>
         <div className="flex-1">
           <Textarea
-            placeholder={hasActiveSubscription ? "What's on your mind?" : "Posting disabled - Creator/Business account with active subscription required"}
+             placeholder={canPost ? "What's on your mind?" : "Switch to Creator or Business account to post"}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            disabled={!hasActiveSubscription}
+             disabled={!canPost}
             className="min-h-[44px] resize-none"
           />
           {showOptionalFields && (
@@ -164,7 +155,7 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
                 variant="ghost"
                 size="sm"
                 onClick={() => handlePickMedia('image/*')}
-                disabled={!hasActiveSubscription || submitting}
+                 disabled={!canPost || submitting}
                 className="gap-2"
               >
                 <ImageIcon className="h-4 w-4" /> Photo
@@ -174,7 +165,7 @@ const FeedComposer = ({ onPosted }: FeedComposerProps) => {
                 variant="ghost"
                 size="sm"
                 onClick={() => handlePickMedia('video/*')}
-                disabled={!hasActiveSubscription || submitting}
+                 disabled={!canPost || submitting}
                 className="gap-2"
               >
                 <VideoIcon className="h-4 w-4" /> Video

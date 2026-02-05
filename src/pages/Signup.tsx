@@ -90,7 +90,7 @@ const Signup = () => {
       icon: Store,
       title: 'Business',
       description: 'Share products with Pi pricing & links',
-      price: '10π',
+       price: 'Free',
       features: ['Product listings with pricing', 'External store links', 'Business verification badge', 'Analytics dashboard'],
     },
     {
@@ -98,7 +98,7 @@ const Signup = () => {
       icon: Sparkles,
       title: 'Creator',
       description: 'Share content & grow your audience',
-      price: '10π',
+       price: 'Free',
       features: ['Unlimited posts & reels', 'Content analytics', 'Verified creator badge', 'Audience insights'],
     },
     {
@@ -186,38 +186,8 @@ const Signup = () => {
     setStep("creating");
 
     try {
-      // Charge 10π for Business/Creator account types (Shopper is free)
-      if (selectedType === 'business' || selectedType === 'creator') {
-        const pricePi = 10;
-        await new Promise<void>((resolve, reject) => {
-          if (typeof window === 'undefined' || !window.Pi) {
-            return reject(new Error('Pi SDK not available. Please open this app in Pi Browser.'));
-          }
-          try {
-            window.Pi.createPayment(
-              {
-                amount: pricePi,
-                memo: `Create ${selectedType} account`,
-                metadata: { purpose: 'account_creation', type: selectedType, userId },
-              },
-              {
-                onReadyForServerApproval: () => {
-                  // Mainnet mode - payment ready for server approval
-                  console.log('Pi payment ready for approval');
-                },
-                onReadyForServerCompletion: () => {
-                  console.log('✅ Pi payment completed on MAINNET');
-                  resolve();
-                },
-                onCancel: () => reject(new Error('Payment cancelled')),
-                onError: (e: any) => reject(e instanceof Error ? e : new Error('Payment failed')),
-              }
-            );
-          } catch (e) {
-            reject(e instanceof Error ? e : new Error('Unable to start payment'));
-          }
-        });
-      }
+       // Note: Account creation is now FREE for all account types
+       console.log('Creating account type:', selectedType);
 
       const { error } = await signUpWithPi(
         userId,
@@ -232,16 +202,8 @@ const Signup = () => {
         throw error;
       }
 
-      // Record/activate subscription when paid tiers are selected
-      if (selectedType === 'business' || selectedType === 'creator') {
-        try {
-          await supabase.functions.invoke('record-payment', {
-            body: { userId, plan: 'monthly_20pi', accountType: selectedType },
-          });
-        } catch (e) {
-          console.warn('record-payment invocation failed (will rely on client features only):', e);
-        }
-      }
+       // Note: Subscriptions are optional premium features
+       console.log('Profile created successfully for:', selectedType);
 
       toast({
         title: "Welcome to DropShare!",
@@ -431,8 +393,7 @@ const Signup = () => {
               <div className="space-y-1">
                 <h3 className="font-semibold text-sm">Choose Your Account Type</h3>
                 <p className="text-xs text-muted-foreground">
-                  Business & Creator accounts require a 10π monthly subscription.
-                  Shopper accounts are completely free.
+                   All account types are free. Choose the one that best fits your needs.
                 </p>
               </div>
               <Dialog open={showPlanModal} onOpenChange={setShowPlanModal}>
@@ -471,7 +432,7 @@ const Signup = () => {
                       </div>
                     ))}
                     <p className="text-xs text-muted-foreground pt-2 border-t">
-                      💡 Your subscription auto-renews monthly. Downgrade to Shopper anytime for free.
+                       💡 All accounts are free. Premium features available with Pi payments.
                     </p>
                   </div>
                 </DialogContent>
