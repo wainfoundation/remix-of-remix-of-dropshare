@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* DropShare Design System - Instagram-inspired dark/light theme */
+/* DropShare Design System - Black & White Glassmorphism */
 
 @layer base {
   :root {
@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
 
-    --primary: 204 100% 50%;
+    --primary: 0 0% 0%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 96%;
@@ -32,22 +32,18 @@
 
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 204 100% 50%;
+    --ring: 0 0% 0%;
 
     --radius: 0.75rem;
 
-    /* Custom tokens */
-    --gradient-instagram: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-    --gradient-primary: linear-gradient(135deg, hsl(204, 100%, 50%) 0%, hsl(280, 100%, 60%) 100%);
-    
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 20%;
-    --sidebar-primary: 204 100% 50%;
+    --sidebar-primary: 0 0% 0%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 94%;
     --sidebar-accent-foreground: 0 0% 20%;
     --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 204 100% 50%;
+    --sidebar-ring: 0 0% 0%;
   }
 
   .dark {
@@ -60,8 +56,8 @@
     --popover: 0 0% 7%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 204 100% 50%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
 
     --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 100%;
@@ -77,16 +73,16 @@
 
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 204 100% 50%;
+    --ring: 0 0% 100%;
 
     --sidebar-background: 0 0% 5%;
     --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 204 100% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 0 0% 0%;
     --sidebar-accent: 0 0% 15%;
     --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 204 100% 50%;
+    --sidebar-ring: 0 0% 100%;
   }
 }
 
@@ -102,26 +98,6 @@
 }
 
 @layer utilities {
-  /* Hide scrollbar but keep functionality */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-@layer utilities {
-  .gradient-instagram {
-    background: var(--gradient-instagram);
-  }
-  
-  .gradient-primary {
-    background: var(--gradient-primary);
-  }
-  
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -168,7 +144,6 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
-  /* Glassmorphism card variations */
   .glass-card {
     @apply glass rounded-xl shadow-xl;
   }
@@ -181,7 +156,6 @@
     @apply glass-subtle rounded-xl shadow-lg;
   }
 
-  /* Glassmorphism with gradient border */
   .glass-gradient-border {
     position: relative;
     background: rgba(255, 255, 255, 0.1);
