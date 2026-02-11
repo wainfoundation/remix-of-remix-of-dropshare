@@ -1,1 +1,28 @@
 project_id = "zgbzubmazzxjylgdpdqi"
+
+[functions.pi-auth]
+verify_jwt = false
+
+[functions.pi-payment]
+verify_jwt = false
+
+[functions.pi-ads]
+verify_jwt = false
+
+[functions.dropshare-api]
+verify_jwt = false
+
+[functions.send-notification]
+verify_jwt = false
+
+[functions.approve-payment]
+verify_jwt = false
+
+[functions.complete-payment]
+verify_jwt = false
+
+[functions.record-payment]
+verify_jwt = false
+
+[functions.subscription-sweeper]
+verify_jwt = false

@@ -133,7 +133,7 @@ export function PiAuthComponent() {
       <Button
         onClick={handlePiSignIn}
         disabled={!sdkReady || piLoading}
-        className="w-full h-12 text-base font-semibold bg-sky-500 hover:bg-sky-600 text-white"
+        className="w-full h-12 text-base font-semibold"
       >
         {!sdkReady ? (
           <>
