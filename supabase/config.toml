@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.subscription-sweeper]
 verify_jwt = false
+
+[functions.pi-a2u]
+verify_jwt = false
