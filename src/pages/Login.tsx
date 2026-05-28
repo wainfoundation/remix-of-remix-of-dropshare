@@ -70,6 +70,15 @@ const Login = () => {
           </CardContent>
         </Card>
 
+        <div className="text-center">
+          <Link
+            to="/testnet-reward"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card/50 backdrop-blur-xl px-4 py-3 text-sm font-medium hover:bg-card transition"
+          >
+            🎁 Claim Test Pi (Testnet A2U Reward)
+          </Link>
+        </div>
+
         {recent.length > 0 && (
           <Card className="glass-card border-border">
             <CardHeader className="pb-2">

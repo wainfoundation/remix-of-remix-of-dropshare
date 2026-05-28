@@ -35,6 +35,7 @@ import {
   UserCheck,
   ExternalLink,
   Film,
+  Gift,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -107,9 +108,13 @@ const Menu = () => {
 
   // Settings and Activity
   const settingsActivityItems = [
+    { icon: Gift, label: 'Claim Test Pi (A2U)', path: '/testnet-reward' },
     { icon: CreditCard, label: 'Orders and payments', path: '/orders' },
     { icon: Bell, label: 'Notification Demo', path: '/notifications/demo' },
-    ...(user?.email === 'sibiyagaming@gmail.com' || profile?.email === 'sibiyagaming@gmail.com' ? [{ icon: Shield, label: 'Admin Mrwain', path: '/admin-mrwain' }] : []),
+    ...(user?.email === 'sibiyagaming@gmail.com' || profile?.email === 'sibiyagaming@gmail.com' ? [
+      { icon: Shield, label: 'Admin Mrwain', path: '/admin-mrwain' },
+      { icon: BarChart3, label: 'Testnet A2U Progress', path: '/admin/testnet-progress' },
+    ] : []),
   ];
 
   // More info and support
