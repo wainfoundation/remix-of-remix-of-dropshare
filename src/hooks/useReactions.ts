@@ -26,7 +26,7 @@ export const useReactions = (postId: string, userId: string | undefined) => {
   const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Fetch reactions on mount
   useEffect(() => {
