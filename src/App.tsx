@@ -43,6 +43,8 @@ import AdminMrwain from "./pages/AdminMrwain";
 import AdminSignup from "./pages/AdminSignup";
 import NotificationDemo from "./pages/NotificationDemo";
 import GlassDesign from "./pages/GlassDesign";
+import TestnetReward from "./pages/TestnetReward";
+import AdminTestnetProgress from "./pages/AdminTestnetProgress";
 
 const queryClient = new QueryClient();
 
@@ -133,6 +135,8 @@ const AppContent = () => {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin-mrwain" element={<AdminMrwain />} />
           <Route path="/admin/signup" element={<AdminSignup />} />
+          <Route path="/testnet-reward" element={<TestnetReward />} />
+          <Route path="/admin/testnet-progress" element={<AdminTestnetProgress />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
